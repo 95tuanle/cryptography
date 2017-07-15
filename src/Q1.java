@@ -132,6 +132,9 @@ public class Q1 {
                 readingResult.add(character);
             }
         }
+        if (readingResult.get(readingResult.size() - 1) == '\n') {
+            readingResult.remove((readingResult.size() - 1));
+        }
         in.close();
         return readingResult;
     }
@@ -143,10 +146,10 @@ public class Q1 {
 //        }
 //    }
 
-    private static ArrayList<Character> processAlphabetFile() throws IOException {
+    static ArrayList<Character> processAlphabetFile() throws IOException {
         ArrayList<Character> in = readFile("sourceFile/alphabet.txt");
 //        TODOx anyway to not hard-code? Idk and I also don't have time
-        in.remove(51);
+//        in.remove(51);
         in.remove(39);
         in.set(39, '\n');
 //        in.remove(50);
