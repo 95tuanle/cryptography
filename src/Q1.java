@@ -33,7 +33,7 @@ public class Q1 {
         }
 
         Arrays.sort(resultsAsArray, resultsAsArray[0]);
-        System.out.println("TOP 3 RESULTS\n");
+        System.out.println("TOP 3 RESULTS OF QUESTION 1\n");
 //        TODO no hard-code
         for (int i = resultsAsArray.length - 1; i > resultsAsArray.length - 4; i--) {
 //            System.out.println("Result " + i);
@@ -44,7 +44,7 @@ public class Q1 {
         System.out.println();
     }
 
-    private static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) {
+    public static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) {
         String[] words = decodedString.split(" ");
         int score = 0;
         for (String word : words) {
@@ -80,7 +80,7 @@ public class Q1 {
         return new String(decodedStringAsCharArray);
     }
 
-    private static TreeMap<String, Integer> process10000file() {
+    public static TreeMap<String, Integer> process10000file() {
         String line;
         String returnResult = "";
         TreeMap<String, Integer> mostCommonWords = new TreeMap<>();
@@ -117,7 +117,7 @@ public class Q1 {
         return null;
     }
 
-    private static ArrayList<Character> readFile(String fileName) throws IOException {
+    public static ArrayList<Character> readFile(String fileName) throws IOException {
         FileReader in;
 //        String temp = null;
         in = new FileReader(fileName);
