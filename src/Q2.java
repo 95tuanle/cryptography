@@ -1,16 +1,21 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeMap;
 
 
 public class Q2 {
     /*
-    * array1 = Tim tat ca cac soo chia het cho old_string.length
-    * foreach i in array1:
-    *   for k = 0; k < OLD_STRING.LENGTH/I; k++
-    *       for j = 0; j < I; j++
-    *           index = OLD_STRING.LENGTH/I*j+k
-    *
-    * */
+        * array1 = Tim tat ca cac soo chia het cho old_string.length
+        * foreach i in array1:
+        *   for k = 0; k < OLD_STRING.LENGTH/I; k++
+        *       for j = 0; j < I; j++
+        *           index = OLD_STRING.LENGTH/I*j+k
+        *
+        * */
+
+    private static int numberOfPrintResult = 3;
+
     public static void main(String[] args) {
         try {
             crackTransposition("sourceFile/msg2.enc", -1);
@@ -36,16 +41,32 @@ public class Q2 {
         if (key != -1 && !commonDivisors.contains(key)) {
             throw new IllegalArgumentException("Invalid key value!");
         }
+
+        ArrayList<DecodedString> results = new ArrayList<>();
+        TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
+
         if (key == -1) {
             for (int i : commonDivisors) {
-                actualCrack(i, old_string);
+                actualCrack(i, old_string, results, mostCommonWords);
             }
-        } else if (key > -1) {
-            actualCrack(key, old_string);
+
+//            TODO can it be more efficient
+            DecodedString[] resultsAsArray = new DecodedString[results.size()];
+            results.toArray(resultsAsArray);
+            Arrays.sort(resultsAsArray, resultsAsArray[0]);
+
+            System.out.println("TOP 3 RESULTS\n");
+            for (int i = resultsAsArray.length - 1; i > resultsAsArray.length - numberOfPrintResult - 1; i--) {
+                System.out.println(resultsAsArray[i]);
+            }
+        } else {
+            actualCrack(key, old_string, results, mostCommonWords);
+            System.out.println("RESULT:\n");
+            System.out.println(results.get(0));
         }
     }
 
-    private static void actualCrack(int key, ArrayList<Character> old_string) {
+    private static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Integer> mostCommonWord) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int k = 0; k < old_string.size() / key; k++) {
             for (int j = 0; j < key; j++) {
@@ -53,7 +74,7 @@ public class Q2 {
                 result.append(old_string.get(index));
             }
         }
-        System.out.println("Key    " + key);
-        System.out.println("Decoded string:\n\n" + result + "\n");
+        String resultAsString = result.toString();
+        results.add(new DecodedString(resultAsString, key, Q1.scoring(resultAsString, mostCommonWord)));
     }
 }

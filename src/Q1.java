@@ -70,7 +70,7 @@ public class Q1 {
         resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
     }
 
-    private static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) throws IOException {
+    static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) throws IOException {
 //        TODOx better way to score? idk but I dont have time for it
         String[] words = decodedString.split(" ");
         int score = 0;
@@ -121,7 +121,7 @@ public class Q1 {
 //        return returnResult;
 //    }
 
-    private static ArrayList<Character> readFile(String fileName) throws IOException {
+    static ArrayList<Character> readFile(String fileName) throws IOException {
         FileReader in;
         in = new FileReader(fileName);
         ArrayList<Character> readingResult = new ArrayList<>();
@@ -204,6 +204,13 @@ class DecodedString implements Comparator<DecodedString> {
         if (o1.score > o2.score) return 1;
         else if (o1.score < o2.score) return -1;
         else return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Key = " + key + "\n" +
+                "Score = " + score + "\n" +
+                "Decoded String = '" + decodedString + '\'' + "\n";
     }
 }
 
