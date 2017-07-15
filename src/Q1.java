@@ -1,10 +1,10 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
+
 public class Q1 {
+    private static boolean printFrequencyFile = false;
+
 
     static void answer() throws IOException {
         ArrayList<Character> alphabetFile = processAlphabetFile();
@@ -12,6 +12,8 @@ public class Q1 {
         ArrayList<Character> old_string = readFile("sourceFile/msg1.enc");
         ArrayList<Integer> convertedString = convertFromASCIIToDenisCode(old_string, alphabetFile);
         TreeMap<String, Integer> mostCommonWords = process10000file();
+        int[] frequency = frequencyAnalysis(mostCommonWords);
+        int commonWordSize = calculateCommonWordSize(mostCommonWords, frequency);
 
         int alphabetFileSize = alphabetFile.size();
 //        LinkedHashMap<String, Integer> results = new LinkedHashMap<>();
@@ -26,7 +28,7 @@ public class Q1 {
             }
             String decodedString = decodeString(newString, alphabetFile);
 //            results.put(decodedString, 0);
-            resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
+            resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords, commonWordSize));
 //            System.out.println("The key is: " + i);
 //            System.out.println(decodedString);
 //            System.out.println("\n***************************************\n");
@@ -44,41 +46,97 @@ public class Q1 {
         System.out.println();
     }
 
-    private static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) {
+    private static int calculateCommonWordSize(TreeMap<String, Integer> mostCommonWords, int[] frequency) {
+        int commonWordSize = 0;
+        int totalNumberOfWords = frequency[commonWordSize];
+        while ((double) totalNumberOfWords / mostCommonWords.size() < 0.99) {
+            commonWordSize++;
+            totalNumberOfWords += frequency[commonWordSize];
+        }
+        return commonWordSize;
+    }
+
+    private static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords, int commonWordSize) throws IOException {
+//        TODOx better way to score? idk but I dont have time for it
         String[] words = decodedString.split(" ");
         int score = 0;
+
         for (String word : words) {
-            if (word.length() < 15) {
+//            TODOx do analyze to determine value of 15
+            if (word.length() < commonWordSize) {
                 if (mostCommonWords.containsKey(word.toLowerCase())) {
                     score++;
                 }
             }
         }
         return score;
+
     }
 
-    private static char[] arrayObjectToCharArray(Object[] decodedStringAsArrayOfObject) {
-        char[] returnResult = new char[decodedStringAsArrayOfObject.length];
-        for (int i = 0; i < returnResult.length; i++) {
-            returnResult[i] = (Character) decodedStringAsArrayOfObject[i];
+    private static int[] frequencyAnalysis(TreeMap<String, Integer> mostCommonWords) throws IOException {
+//      TODOx can I not hard-code 20? can but what's the point?
+        int[] frequency = new int[20];
+        for (Map.Entry<String, Integer> entry : mostCommonWords.entrySet()) {
+            int stringLength = entry.getKey().length();
+            frequency[stringLength - 1]++;
         }
-        return returnResult;
+        if (printFrequencyFile) {
+            printFrequencyToCSV(frequency);
+        }
+        return frequency;
     }
 
-    private static String decodeString(ArrayList<Integer> originalString, ArrayList<Character> alphabetFile) {
-        HashMap<Integer, Character> denisCode = new HashMap<>();
-        for (int i = 0; i < alphabetFile.size(); i++) {
-            denisCode.put(i, alphabetFile.get(i));
+    private static void printFrequencyToCSV(int[] frequency) throws IOException {
+        PrintWriter outputStream = null;
+
+        try {
+            outputStream = new PrintWriter(new FileWriter("Frequency analysis.csv"));
+            outputStream.println("Length\tFrequency");
+            for (int i = 0; i < frequency.length; i++) {
+                outputStream.print(i);
+                outputStream.println("\t" + frequency[i]);
+            }
+
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
         }
-        ArrayList<Character> stringAfterConverted = new ArrayList<>();
-        for (Integer anOriginalCharacter : originalString) {
-            Character correspondingValue = denisCode.get(anOriginalCharacter);
-            stringAfterConverted.add(correspondingValue);
-        }
-        Object[] decodedStringAsArrayOfObject = stringAfterConverted.toArray();
-        char[] decodedStringAsCharArray = arrayObjectToCharArray(decodedStringAsArrayOfObject);
-        return new String(decodedStringAsCharArray);
     }
+
+    private static String decodeString(ArrayList<Integer> originalStringInDenisCode, ArrayList<Character> alphabetFile) {
+        /*
+        * 1. Convert orinial to DenisCode
+        * 2. Plus 1
+        * 3. Convert Denis code to character
+        * */
+
+//        COVERT ORIGINAL TO DENIS CODE
+//        TODOx better way to convert?
+//        HashMap<Integer, Character> denisCode = new HashMap<>();
+//        for (int i = 0; i < alphabetFile.size(); i++) {
+//            denisCode.put(i, alphabetFile.get(i));
+//        }
+//        ArrayList<Character> stringAfterConverted = new ArrayList<>();
+        StringBuilder stringAfterConvertedStringForm = new StringBuilder();
+
+        for (Integer anOriginalCharacter : originalStringInDenisCode) {
+//            Character correspondingValue = denisCode.get(anOriginalCharacter);
+//            stringAfterConverted.add(correspondingValue);
+            stringAfterConvertedStringForm.append(alphabetFile.get(anOriginalCharacter));
+        }
+//        Object[] decodedStringAsArrayOfObject = stringAfterConverted.toArray();
+//        char[] decodedStringAsCharArray = arrayObjectToCharArray(decodedStringAsArrayOfObject);
+        return stringAfterConvertedStringForm.toString();
+    }
+
+//    private static char[] arrayObjectToCharArray(Object[] decodedStringAsArrayOfObject) {
+//        char[] returnResult = new char[decodedStringAsArrayOfObject.length];
+//        for (int i = 0; i < returnResult.length; i++) {
+//            returnResult[i] = (Character) decodedStringAsArrayOfObject[i];
+//        }
+//        return returnResult;
+//    }
 
     private static TreeMap<String, Integer> process10000file() {
         String line;
@@ -119,10 +177,7 @@ public class Q1 {
 
     private static ArrayList<Character> readFile(String fileName) throws IOException {
         FileReader in;
-//        String temp = null;
         in = new FileReader(fileName);
-
-//        temp = "";
         ArrayList<Character> readingResult = new ArrayList<>();
         int characterAsInt;
         while ((characterAsInt = in.read()) != -1) {
@@ -136,11 +191,11 @@ public class Q1 {
     }
 
     //    TODOx can I not use ArrayList? can but the benefit does not justify the cost
-    private static <E> void printArrayList(ArrayList<E> arrayList) {
-        for (E anArrayList : arrayList) {
-            System.out.print(anArrayList);
-        }
-    }
+//    private static <E> void printArrayList(ArrayList<E> arrayList) {
+//        for (E anArrayList : arrayList) {
+//            System.out.print(anArrayList);
+//        }
+//    }
 
     private static ArrayList<Character> processAlphabetFile() throws IOException {
         ArrayList<Character> in = readFile("sourceFile/alphabet.txt");
@@ -153,15 +208,16 @@ public class Q1 {
     }
 
     private static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
-//        TODO if have time think of a more efficient algorithm
-        HashMap<Character, Integer> denisCode = new HashMap<>();
-        for (int i = 0; i < alphabetFile.size(); i++) {
-            denisCode.put(alphabetFile.get(i), i);
-        }
+//        TODOx if have time think of a more efficient algorithm
+//        HashMap<Character, Integer> denisCode = new HashMap<>();
+//        for (int i = 0; i < alphabetFile.size(); i++) {
+//            denisCode.put(alphabetFile.get(i), i);
+//        }
         ArrayList<Integer> stringAfterConverted = new ArrayList<>();
         for (Character anOriginalCharacter : originalString) {
-            Integer correspondingValue = denisCode.get(anOriginalCharacter);
-            stringAfterConverted.add(correspondingValue);
+//            Integer correspondingValue = denisCode.get(anOriginalCharacter);
+//            stringAfterConverted.add(correspondingValue);
+            stringAfterConverted.add(alphabetFile.indexOf(anOriginalCharacter));
         }
         return stringAfterConverted;
     }
