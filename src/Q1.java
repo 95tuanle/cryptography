@@ -2,25 +2,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.TreeMap;
+import java.util.*;
 
-/**
- * Created by Minh V. Tran on 13/07/2017.
- */
 public class Q1 {
-    /*
-    * old_string = convert(nsg1..enc)
-    *
-*     For j = 0 to j < old_string.length
-*       new_string[old_string];
-*       For i = 0 to i < 50
-    *       new_string[j] = (old_string[j]+i) % 50
- *       decrypt(new_string)
- *       print(new_string)
-    * */
+
     static void answer() throws IOException {
         ArrayList<Character> alphabetFile = processAlphabetFile();
 //        TODO Is there anyway to save time, i.e. combine read file and covert from ASCII into 1
@@ -29,7 +14,8 @@ public class Q1 {
         TreeMap<String, Integer> mostCommonWords = process10000file();
 
         int alphabetFileSize = alphabetFile.size();
-        LinkedHashMap<String, Integer> results = new LinkedHashMap<>();
+//        LinkedHashMap<String, Integer> results = new LinkedHashMap<>();
+        DecodedString[] resultsAsArray = new DecodedString[50]; // TODO no hard-coded
 
         for (int i = 0; i < alphabetFile.size(); i++) {
             ArrayList<Integer> newString = new ArrayList<>();
@@ -38,47 +24,24 @@ public class Q1 {
                 int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
                 newString.add(newCharacter);
             }
-            ArrayList<Character> decodedStringAsArrayList = decodeString(newString, alphabetFile);
-            Object[] decodedStringAsArrayOfObject = decodedStringAsArrayList.toArray();
-            char[] decodedStringAsCharArray = arrayObjectToCharArray(decodedStringAsArrayOfObject);
-            String decodedString = new String(decodedStringAsCharArray);
-            results.put(decodedString, 0);
-            scoring(decodedString, mostCommonWords);
-            System.out.println("The key is: " + i);
-            printArrayList(decodedStringAsArrayList);
-            System.out.println("\n***************************************\n");
+            String decodedString = decodeString(newString, alphabetFile);
+//            results.put(decodedString, 0);
+            resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
+//            System.out.println("The key is: " + i);
+//            System.out.println(decodedString);
+//            System.out.println("\n***************************************\n");
         }
 
-//        int i = 0;
-//        String stringCorrespondingWithMaxScore = "";
-//        int maxScore = 0;
-//        for(Map.Entry<String, Integer> entry : results.entrySet()) {
-//            String decodedString = entry.getKey();
-//            int score = scoring(decodedString, mostCommonWords);
-//            if(score < maxScore){
-//                score = maxScore;
-//            }
-//            results.put(decodedString, score);
-//            System.out.println("The score of element " + i + " is " + score);
-//            i++;
-//        }
-
-//        results.values();
-//        Set<Map.Entry<String, Integer>> resultsInSetFormat = results.entrySet();
-//        Map.Entry<String, Integer>[] test = new Map.Entry<String, Integer>[50];
-//        resultsInSetFormat.toArray(test);
-//        Object[] resultsInArrayFormat = resultsInSetFormat.toArray();
-//        Arrays.sort(resultsInArrayFormat);
-//        TreeMap<Integer, String> sortedResult = new TreeMap<>();
-//        for(Map.Entry<String, Integer> entry : results.entrySet()){
-//            String decodedString = entry.getKey();
-//            Integer score = entry.getValue();
-//            sortedResult.put(score, decodedString);
-//        }
-
+        Arrays.sort(resultsAsArray, resultsAsArray[0]);
+        System.out.println("TOP 3 RESULTS\n");
+//        TODO no hard-code
+        for (int i = resultsAsArray.length - 1; i > resultsAsArray.length - 4; i--) {
+//            System.out.println("Result " + i);
+            System.out.println("Key    " + resultsAsArray[i].getKey());
+            System.out.println("Score  " + resultsAsArray[i].getScore());
+            System.out.println("Decoded string:\n\n" + resultsAsArray[i].getDecodedString() + "\n");
+        }
         System.out.println();
-
-
     }
 
     private static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) {
@@ -102,7 +65,7 @@ public class Q1 {
         return returnResult;
     }
 
-    private static ArrayList<Character> decodeString(ArrayList<Integer> originalString, ArrayList<Character> alphabetFile) {
+    private static String decodeString(ArrayList<Integer> originalString, ArrayList<Character> alphabetFile) {
         HashMap<Integer, Character> denisCode = new HashMap<>();
         for (int i = 0; i < alphabetFile.size(); i++) {
             denisCode.put(i, alphabetFile.get(i));
@@ -112,7 +75,9 @@ public class Q1 {
             Character correspondingValue = denisCode.get(anOriginalCharacter);
             stringAfterConverted.add(correspondingValue);
         }
-        return stringAfterConverted;
+        Object[] decodedStringAsArrayOfObject = stringAfterConverted.toArray();
+        char[] decodedStringAsCharArray = arrayObjectToCharArray(decodedStringAsArrayOfObject);
+        return new String(decodedStringAsCharArray);
     }
 
     private static TreeMap<String, Integer> process10000file() {
@@ -202,6 +167,48 @@ public class Q1 {
     }
 }
 
-class Auxiliary {
+class DecodedString implements Comparator<DecodedString> {
+    private String decodedString;
+    private int key;
+    private int score;
 
+    //  TODO ngoài cái class này còn cái class nào khac nữa?
+    DecodedString() {
+        decodedString = "";
+        key = 0;
+        score = 0;
+    }
+
+    DecodedString(String decodedString, int key, int score) {
+        this.decodedString = decodedString;
+        this.key = key;
+        this.score = score;
+    }
+
+    String getDecodedString() {
+        return decodedString;
+    }
+
+    int getKey() {
+        return key;
+    }
+
+    int getScore() {
+        return score;
+    }
+
+    @Override
+    public int compare(DecodedString o1, DecodedString o2) {
+        if (o1.score > o2.score) return 1;
+        else if (o1.score < o2.score) return -1;
+        else return 0;
+    }
 }
+
+/*Outline
+* Tạo ra class mới
+* Thay vì store dưới dạng Map thì store dưới dạng Aray of object
+* Implement method comparator
+* Dùng Array.sort
+* Lọc ra top 3
+* */
