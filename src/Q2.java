@@ -1,7 +1,7 @@
-/**
- * Created by s3574983 on 13/07/2017.
- */
-public class Q2 {
+class Q2 {
+    static void crackTransposition(String s, int i) {
+
+    }
     /*
     * array1 = Tim tat ca cac soo chia het cho old_string.length
     * foreach i in array1:

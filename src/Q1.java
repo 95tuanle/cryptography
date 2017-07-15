@@ -1,69 +1,83 @@
-import java.io.*;
-import java.util.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.TreeMap;
 
 
 public class Q1 {
-    private static boolean printFrequencyFile = false;
+    private static int numberOfPrintResult = 3;
 
+    public static void main(String[] args) {
+        try {
+            Q1.crackCaesar("sourceFile/msg1.enc", -1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-    static void answer() throws IOException {
+    static void crackCaesar(String path, int key) throws IOException {
         ArrayList<Character> alphabetFile = processAlphabetFile();
-//        TODO Is there anyway to save time, i.e. combine read file and covert from ASCII into 1
-        ArrayList<Character> old_string = readFile("sourceFile/msg1.enc");
-        ArrayList<Integer> convertedString = convertFromASCIIToDenisCode(old_string, alphabetFile);
-        TreeMap<String, Integer> mostCommonWords = process10000file();
-        int[] frequency = frequencyAnalysis(mostCommonWords);
-        int commonWordSize = calculateCommonWordSize(mostCommonWords, frequency);
-
         int alphabetFileSize = alphabetFile.size();
-//        LinkedHashMap<String, Integer> results = new LinkedHashMap<>();
-        DecodedString[] resultsAsArray = new DecodedString[50]; // TODO no hard-coded
 
-        for (int i = 0; i < alphabetFile.size(); i++) {
-            ArrayList<Integer> newString = new ArrayList<>();
-            for (Integer elementInConvertedString : convertedString) {
-//                System.out.println(j);
-                int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
-                newString.add(newCharacter);
-            }
-            String decodedString = decodeString(newString, alphabetFile);
-//            results.put(decodedString, 0);
-            resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords, commonWordSize));
-//            System.out.println("The key is: " + i);
-//            System.out.println(decodedString);
-//            System.out.println("\n***************************************\n");
+        if (key < -1 || key >= alphabetFileSize) {
+            throw new IllegalArgumentException("Invalid Key");
         }
 
-        Arrays.sort(resultsAsArray, resultsAsArray[0]);
-        System.out.println("TOP 3 RESULTS\n");
-//        TODO no hard-code
-        for (int i = resultsAsArray.length - 1; i > resultsAsArray.length - 4; i--) {
-//            System.out.println("Result " + i);
-            System.out.println("Key    " + resultsAsArray[i].getKey());
-            System.out.println("Score  " + resultsAsArray[i].getScore());
-            System.out.println("Decoded string:\n\n" + resultsAsArray[i].getDecodedString() + "\n");
+        ArrayList<Character> old_string = readFile(path);
+        ArrayList<Integer> convertedString = convertFromASCIIToDenisCode(old_string, alphabetFile);
+        TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
+        DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
+
+        if (key == -1) {
+            for (int i = 0; i < alphabetFileSize; i++) {
+                crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
+            }
+            Arrays.sort(resultsAsArray, resultsAsArray[0]);
+            System.out.println("TOP 3 RESULTS\n");
+            for (int i = resultsAsArray.length - 1; i > resultsAsArray.length - numberOfPrintResult - 1; i--) {
+                System.out.println("Key    " + resultsAsArray[i].getKey());
+                System.out.println("Score  " + resultsAsArray[i].getScore());
+                System.out.println("Decoded string:\n\n" + resultsAsArray[i].getDecodedString() + "\n");
+            }
+        } else {
+            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, key);
+            System.out.println("RESULT\n");
+            System.out.println("Key    " + resultsAsArray[key].getKey());
+            System.out.println("Score  " + resultsAsArray[key].getScore());
+            System.out.println("Decoded string:\n\n" + resultsAsArray[key].getDecodedString() + "\n");
         }
         System.out.println();
+
     }
 
-    private static int calculateCommonWordSize(TreeMap<String, Integer> mostCommonWords, int[] frequency) {
-        int commonWordSize = 0;
-        int totalNumberOfWords = frequency[commonWordSize];
-        while ((double) totalNumberOfWords / mostCommonWords.size() < 0.99) {
-            commonWordSize++;
-            totalNumberOfWords += frequency[commonWordSize];
+    private static DecodedString[] coreCaesarCracking(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize) throws IOException {
+        DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
+        for (int i = 0; i < alphabetFile.size(); i++) {
+            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
         }
-        return commonWordSize;
+        return resultsAsArray;
     }
 
-    private static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords, int commonWordSize) throws IOException {
+    private static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
+        ArrayList<Integer> newString = new ArrayList<>();
+        for (Integer elementInConvertedString : convertedString) {
+            int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
+            newString.add(newCharacter);
+        }
+        String decodedString = decodeString(newString, alphabetFile);
+        resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
+    }
+
+    private static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) throws IOException {
 //        TODOx better way to score? idk but I dont have time for it
         String[] words = decodedString.split(" ");
         int score = 0;
 
         for (String word : words) {
 //            TODOx do analyze to determine value of 15
-            if (word.length() < commonWordSize) {
+            if (word.length() < 12) {
                 if (mostCommonWords.containsKey(word.toLowerCase())) {
                     score++;
                 }
@@ -71,37 +85,6 @@ public class Q1 {
         }
         return score;
 
-    }
-
-    private static int[] frequencyAnalysis(TreeMap<String, Integer> mostCommonWords) throws IOException {
-//      TODOx can I not hard-code 20? can but what's the point?
-        int[] frequency = new int[20];
-        for (Map.Entry<String, Integer> entry : mostCommonWords.entrySet()) {
-            int stringLength = entry.getKey().length();
-            frequency[stringLength - 1]++;
-        }
-        if (printFrequencyFile) {
-            printFrequencyToCSV(frequency);
-        }
-        return frequency;
-    }
-
-    private static void printFrequencyToCSV(int[] frequency) throws IOException {
-        PrintWriter outputStream = null;
-
-        try {
-            outputStream = new PrintWriter(new FileWriter("Frequency analysis.csv"));
-            outputStream.println("Length\tFrequency");
-            for (int i = 0; i < frequency.length; i++) {
-                outputStream.print(i);
-                outputStream.println("\t" + frequency[i]);
-            }
-
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
-        }
     }
 
     private static String decodeString(ArrayList<Integer> originalStringInDenisCode, ArrayList<Character> alphabetFile) {
@@ -138,43 +121,6 @@ public class Q1 {
 //        return returnResult;
 //    }
 
-    private static TreeMap<String, Integer> process10000file() {
-        String line;
-        String returnResult = "";
-        TreeMap<String, Integer> mostCommonWords = new TreeMap<>();
-        try {
-            // FileReader reads text files in the default encoding.
-            FileReader fileReader =
-                    new FileReader("sourceFile/google-10000-english-no-swears.txt");
-
-            // Always wrap FileReader in BufferedReader.
-            BufferedReader bufferedReader =
-                    new BufferedReader(fileReader);
-            int pos = 0;
-            while ((line = bufferedReader.readLine()) != null) {
-//                returnResult = returnResult.concat(line + "\n");
-                mostCommonWords.put(line, pos);
-            }
-
-            // Always close files.
-            bufferedReader.close();
-
-
-            return mostCommonWords;
-        } catch (FileNotFoundException ex) {
-            System.out.println(
-                    "Unable to open file '" +
-                            "sourceFile/google-10000-english-no-swears.txt" + "'");
-        } catch (IOException ex) {
-            System.out.println(
-                    "Error reading file '"
-                            + "sourceFile/google-10000-english-no-swears.txt" + "'");
-            // Or we could just do this:
-            // ex.printStackTrace();
-        }
-        return null;
-    }
-
     private static ArrayList<Character> readFile(String fileName) throws IOException {
         FileReader in;
         in = new FileReader(fileName);
@@ -199,7 +145,7 @@ public class Q1 {
 
     private static ArrayList<Character> processAlphabetFile() throws IOException {
         ArrayList<Character> in = readFile("sourceFile/alphabet.txt");
-//        TODO anyway to not hard-code?
+//        TODOx anyway to not hard-code? Idk and I also don't have time
         in.remove(51);
         in.remove(39);
         in.set(39, '\n');
@@ -228,7 +174,7 @@ class DecodedString implements Comparator<DecodedString> {
     private int key;
     private int score;
 
-    //  TODO ngoài cái class này còn cái class nào khac nữa?
+    //  TODO any other classes?
     DecodedString() {
         decodedString = "";
         key = 0;
