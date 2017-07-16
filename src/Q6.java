@@ -11,7 +11,7 @@ public class Q6 {
     * gOI HAM SO O CAU SO 2 LEN
     * gOI HAM SO O CAU SO 1 LEN
     * */
-    private static int numberOfPrintResult = 3;
+//    private static int numberOfPrintResult = 3;
 
     public static void main(String[] args) {
         try {
@@ -30,10 +30,10 @@ public class Q6 {
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
         TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
         ArrayList<DecodedString> results = new ArrayList<>();
-        for (int i = 0; i < alphabetFileSize; i++) {
+        for (int i = 0; i < alphabetFile.size(); i++) {
             Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
             for (int x : commonDivisors) {
-                if (x == i){
+                if (i == x) {
                     String tempString = resultsAsArray[i].getDecodedString();
                     ArrayList<Character> readingResult = new ArrayList<>();
                     for (int j = 0; j < tempString.length(); j++) {
@@ -44,7 +44,10 @@ public class Q6 {
 //                    }
                     Q2.actualCrack(x, readingResult, results, mostCommonWords);
                     System.out.println("RESULT:\n");
-                    System.out.println(results.get(0));
+//                    System.out.println("Key    " + results.get(x).getKey());
+//                    System.out.println("Score  " + results.get(x).getScore());
+                    // TODO get the string value from results array which have key = x and print it out in the next line
+                    System.out.println("Decoded string:\n\n" + " *TODO* " + "\n\n");
                 }
             }
         }
