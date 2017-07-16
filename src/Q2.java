@@ -24,7 +24,7 @@ public class Q2 {
         }
     }
 
-    private static ArrayList<Integer> findCommonDivisors(int size) {
+    public static ArrayList<Integer> findCommonDivisors(int size) {
         ArrayList<Integer> commonDivisors = new ArrayList<>();
         for (int i = 1; i < size / 2 + 1; i++) {
             if (size%i ==0) {
@@ -66,7 +66,7 @@ public class Q2 {
         }
     }
 
-    private static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Integer> mostCommonWord) throws IOException {
+    public static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Integer> mostCommonWord) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int k = 0; k < old_string.size() / key; k++) {
             for (int j = 0; j < key; j++) {

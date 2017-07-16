@@ -11,7 +11,7 @@ public class Q1 {
 
     public static void main(String[] args) {
         try {
-            Q1.crackCaesar("sourceFile/msg1.enc", -1);
+            crackCaesar("sourceFile/msg1.enc", -1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,7 +60,7 @@ public class Q1 {
         return resultsAsArray;
     }
 
-    private static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
+    public static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
             int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
@@ -156,7 +156,7 @@ public class Q1 {
         return in;
     }
 
-    private static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
+    public static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
 //        TODOx if have time think of a more efficient algorithm
 //        HashMap<Character, Integer> denisCode = new HashMap<>();
 //        for (int i = 0; i < alphabetFile.size(); i++) {
