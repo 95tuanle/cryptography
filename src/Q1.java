@@ -202,6 +202,18 @@ class DecodedString implements Comparator<DecodedString> {
         return score;
     }
 
+    public void setDecodedString(String decodedString) {
+        this.decodedString = decodedString;
+    }
+
+    public void setKey(int key) {
+        this.key = key;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     @Override
     public int compare(DecodedString o1, DecodedString o2) {
         if (o1.score > o2.score) return 1;
