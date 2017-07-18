@@ -52,13 +52,13 @@ public class Q1 {
 
     }
 
-    private static DecodedString[] coreCaesarCracking(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize) throws IOException {
-        DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
-        for (int i = 0; i < alphabetFile.size(); i++) {
-            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
-        }
-        return resultsAsArray;
-    }
+//    private static DecodedString[] coreCaesarCracking(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize) throws IOException {
+//        DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
+//        for (int i = 0; i < alphabetFile.size(); i++) {
+//            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
+//        }
+//        return resultsAsArray;
+//    }
 
     private static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
         ArrayList<Integer> newString = new ArrayList<>();
@@ -172,21 +172,85 @@ public class Q1 {
     }
 }
 
-class DecodedString implements Comparator<DecodedString> {
-    private String decodedString;
+class DecodedString extends DecodedStringCore {
     private int key;
+
+    DecodedString(String decodedString, int score, int key) {
+        super(decodedString, score);
+        this.key = key;
+    }
+
+    int getKey() {
+        return key;
+    }
+
+    @Override
+    public String toString() {
+        return "Key = " + key + "\n" + super.toString();
+    }
+}
+
+
+//class DecodedString implements Comparator<DecodedString> {
+//    private String decodedString;
+//    private int key;
+//    private int score;
+//
+//    //  TODO any other classes?
+//    DecodedString() {
+//        decodedString = "";
+//        key = 0;
+//        score = 0;
+//    }
+//
+//    DecodedString(String decodedString, int key, int score) {
+//        this.decodedString = decodedString;
+//        this.key = key;
+//        this.score = score;
+//    }
+//
+//    String getDecodedString() {
+//        return decodedString;
+//    }
+//
+//    int getKey() {
+//        return key;
+//    }
+//
+//    int getScore() {
+//        return score;
+//    }
+//
+//    @Override
+//    public int compare(DecodedString o1, DecodedString o2) {
+//        if (o1.score > o2.score) return 1;
+//        else if (o1.score < o2.score) return -1;
+//        else return 0;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "Key = " + key + "\n" +
+//                "Score = " + score + "\n" +
+//                "Decoded String = '" + decodedString + '\'' + "\n";
+//    }
+//}
+
+class DecodedStringCore implements Comparator<DecodedStringCore> {
+    private String decodedString;
+    //    private int key;
     private int score;
 
     //  TODO any other classes?
-    DecodedString() {
-        decodedString = "";
-        key = 0;
-        score = 0;
-    }
+//    DecodedStringCore() {
+//        decodedString = "";
+////        key = 0;
+//        score = 0;
+//    }
 
-    DecodedString(String decodedString, int key, int score) {
+    DecodedStringCore(String decodedString, int score) {
         this.decodedString = decodedString;
-        this.key = key;
+//        this.key = key;
         this.score = score;
     }
 
@@ -194,16 +258,12 @@ class DecodedString implements Comparator<DecodedString> {
         return decodedString;
     }
 
-    int getKey() {
-        return key;
-    }
-
     int getScore() {
         return score;
     }
 
     @Override
-    public int compare(DecodedString o1, DecodedString o2) {
+    public int compare(DecodedStringCore o1, DecodedStringCore o2) {
         if (o1.score > o2.score) return 1;
         else if (o1.score < o2.score) return -1;
         else return 0;
@@ -211,8 +271,7 @@ class DecodedString implements Comparator<DecodedString> {
 
     @Override
     public String toString() {
-        return "Key = " + key + "\n" +
-                "Score = " + score + "\n" +
+        return "Score = " + score + "\n" +
                 "Decoded String = '" + decodedString + '\'' + "\n";
     }
 }
