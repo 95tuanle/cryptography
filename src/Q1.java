@@ -27,7 +27,8 @@ public class Q1 {
 
         ArrayList<Character> old_string = readFile(path);
         ArrayList<Integer> convertedString = convertFromASCIIToDenisCode(old_string, alphabetFile);
-        TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
+//        TODOx reimplement process10000file
+        TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(-1);
         DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
 
         if (key == -1) {
@@ -36,7 +37,7 @@ public class Q1 {
             }
             Arrays.sort(resultsAsArray, resultsAsArray[0]);
             System.out.println("TOP 3 RESULTS\n");
-            for (int i = resultsAsArray.length - 1; i > resultsAsArray.length - numberOfPrintResult - 1; i--) {
+            for (int i = 0; i < numberOfPrintResult; i++) {
                 System.out.println("Key    " + resultsAsArray[i].getKey());
                 System.out.println("Score  " + resultsAsArray[i].getScore());
                 System.out.println("Decoded string:\n\n" + resultsAsArray[i].getDecodedString() + "\n");
@@ -60,28 +61,30 @@ public class Q1 {
 //        return resultsAsArray;
 //    }
 
-    private static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
+    private static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
             int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
             newString.add(newCharacter);
         }
         String decodedString = decodeString(newString, alphabetFile);
-        resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
+        resultsAsArray[i] = new DecodedString(decodedString, scoring(decodedString, mostCommonWords), i);
     }
 
-    static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) throws IOException {
+    static double scoring(String decodedString, TreeMap<String, Double> mostCommonWords) throws IOException {
 //        TODOx better way to score? idk but I dont have time for it
-        String[] words = decodedString.split(" ");
-        int score = 0;
+        String[] words = decodedString.split("\\s+");
+        double score = 0;
 
         for (String word : words) {
 //            TODOx do analyze to determine value of 15
             if (word.length() < 12) {
-                if (mostCommonWords.containsKey(word.toLowerCase())) {
-                    score++;
+                if (mostCommonWords.containsKey(word)) {
+//                    TODOx this may result error
+                    score += mostCommonWords.get(word);
                 }
             }
+
         }
         return score;
 
@@ -175,7 +178,7 @@ public class Q1 {
 class DecodedString extends DecodedStringCore {
     private int key;
 
-    DecodedString(String decodedString, int score, int key) {
+    DecodedString(String decodedString, double score, int key) {
         super(decodedString, score);
         this.key = key;
     }
@@ -196,7 +199,7 @@ class DecodedString extends DecodedStringCore {
 //    private int key;
 //    private int score;
 //
-//    //  TODO any other classes?
+//    //  TODOx any other classes?
 //    DecodedString() {
 //        decodedString = "";
 //        key = 0;
@@ -239,16 +242,16 @@ class DecodedString extends DecodedStringCore {
 class DecodedStringCore implements Comparator<DecodedStringCore> {
     private String decodedString;
     //    private int key;
-    private int score;
+    private double score;
 
-    //  TODO any other classes?
+    //  TODOx any other classes?
 //    DecodedStringCore() {
 //        decodedString = "";
 ////        key = 0;
 //        score = 0;
 //    }
 
-    DecodedStringCore(String decodedString, int score) {
+    DecodedStringCore(String decodedString, double score) {
         this.decodedString = decodedString;
 //        this.key = key;
         this.score = score;
@@ -258,7 +261,7 @@ class DecodedStringCore implements Comparator<DecodedStringCore> {
         return decodedString;
     }
 
-    int getScore() {
+    double getScore() {
         return score;
     }
 

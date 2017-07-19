@@ -38,12 +38,13 @@ public class Q2 {
 //        TODOx fix this one
         ArrayList<Character> old_string = Q1.readFile(path);
         ArrayList<Integer> commonDivisors = findCommonDivisors(old_string.size());
+//        TODOx fix cau so 2
         if (key != -1 && !commonDivisors.contains(key)) {
             throw new IllegalArgumentException("Invalid key value!");
         }
 
         ArrayList<DecodedString> results = new ArrayList<>();
-        TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
+        TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(-1);
 
         if (key == -1) {
             for (int i : commonDivisors) {
@@ -56,7 +57,7 @@ public class Q2 {
             Arrays.sort(resultsAsArray, resultsAsArray[0]);
 
             System.out.println("TOP 3 RESULTS\n");
-            for (int i = resultsAsArray.length - 1; i > resultsAsArray.length - numberOfPrintResult - 1; i--) {
+            for (int i = 0; i < numberOfPrintResult; i++) {
                 System.out.println(resultsAsArray[i]);
             }
         } else {
@@ -66,7 +67,7 @@ public class Q2 {
         }
     }
 
-    private static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Integer> mostCommonWord) throws IOException {
+    private static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Double> mostCommonWord) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int k = 0; k < old_string.size() / key; k++) {
             for (int j = 0; j < key; j++) {
@@ -75,6 +76,6 @@ public class Q2 {
             }
         }
         String resultAsString = result.toString();
-        results.add(new DecodedString(resultAsString, key, Q1.scoring(resultAsString, mostCommonWord)));
+        results.add(new DecodedString(resultAsString, Q1.scoring(resultAsString, mostCommonWord), key));
     }
 }
