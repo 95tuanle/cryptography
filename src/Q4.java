@@ -377,7 +377,7 @@ public class Q4 {
         return score;
     }
 
-    private static String getStringRepresentation(ArrayList<Character> list) {
+    static String getStringRepresentation(ArrayList<Character> list) {
         StringBuilder builder = new StringBuilder(list.size());
         for (Character ch : list) {
             builder.append(ch);
