@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -20,57 +20,189 @@ import java.util.*;
 * */
 
 public class Q4 {
-    private static final int SAMPLE_ENDING = 60;
+    private static final int SAMPLE_ENDING = 635;
     private static final int THRESHOLD = -450;
+    private static final int englishMonogram = 5;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         ArrayList<Character> old_string = Q1.readFile("sourceFile/msg4.enc");
+
+        ArrayList<CharacterFrequency> mostCommonMonogram = processEnglishMonogram();
         TreeMap<String, Double> mostCommonTrigram = CommonWordAnalysis.processTriagramFile(-1);
 
+//        TreeMap<String, Double> mostCommonDouble = CommonWordAnalysis.processDoubleFile();
+
+//        TreeMap<String, Double> mostCommonInitialLetter = CommonWordAnalysis.processInitialLetterFile();
+
+        TreeMap<String, Double> mostCommonOneLetterWord = CommonWordAnalysis.processOneLetterWordFile();
+//        TreeMap<String, Double> mostCommonTwoLetterWord = CommonWordAnalysis.processTwoLetterWordFile();
+//        TreeMap<String, Double> mostCommonThreeLetterWord = CommonWordAnalysis.processThreeLetterWordFile();
+//        TreeMap<String, Double> mostCommonFourLetterWord = CommonWordAnalysis.processFourLetterWordFile();
+
         ArrayList<CharacterFrequency> cipherFreqTable = createFrequencyTable(alphabetFile, old_string);
-        ArrayList<CharacterFrequency> englishMonogram = processEnglishMonogram();
+
         ArrayList<SpaceAnalysis> spaceAnalyses = analyzeSpacingCharacter(old_string, cipherFreqTable);
-        preparePossibleCharacter(cipherFreqTable, englishMonogram, spaceAnalyses);
 
 
-        /*TODO ASSUMPTION
+        /*ASSUMPTION
         * I am assuming that sample of size SAMPLE_ENDING is good enough!*/
-        ArrayList<Character> sample = getSubList(old_string, 0, SAMPLE_ENDING);
-        ArrayList<CharacterFrequency> letterUseInSample = getLetterUseInSample(sample, cipherFreqTable);
+        ArrayList<Character> sampleList = getSubList(old_string, 0, SAMPLE_ENDING);
+//        TODOx analyze based on words
+        String sampleString = getStringRepresentation(sampleList);
+        String[] sampleWordsList = sampleString.split(Character.toString(spaceAnalyses.get(0).getSpace()));
+
+        ArrayList<CharacterFrequency> letterUseInSample = getLetterUseInSample(sampleList, cipherFreqTable);
+
+        HashSet<String> oneLetterWordFromCipher = getOneLetterWordFromCipher(sampleWordsList);
+        TreeMap<String, Integer> twoLetterWordFromCipher = getTwoLetterWordFromCipher(sampleWordsList);
+
+        preparePossibleCharacter(cipherFreqTable, mostCommonMonogram, spaceAnalyses, oneLetterWordFromCipher, mostCommonOneLetterWord);
 
         HashSet<DecodedStringOfRandomSub> results = new HashSet<>();
         TreeMap<Character, Character> key = new TreeMap<>();
 
-        noName(letterUseInSample, key, 0, mostCommonTrigram, sample, results);
-        DecodedStringOfRandomSub[] resultsAsArray = new DecodedStringOfRandomSub[results.size()];
-        results.toArray(resultsAsArray);
-        Arrays.sort(resultsAsArray, (o1, o2) -> {
-            if (o1.getScore() > o2.getScore()) return 1;
-            if (o1.getScore() < o2.getScore()) return -1;
-            return 0;
-        });
+        getKeyFromFile(key);
+        key.put('$', '\'');
+        DecodedStringOfRandomSub decodedStringOfRandomSub = crackRandomSubstitution(key, mostCommonTrigram, sampleWordsList);
+
+        sampleString = sampleString.replaceAll("\n", "\\n");
+        System.out.println(sampleString);
+        System.out.println(decodedStringOfRandomSub.getDecodedString());
+        FileWriter fileWriter = new FileWriter("sourceFile/Answer for Q4.txt");
+        fileWriter.write(decodedStringOfRandomSub.getDecodedString());
+        fileWriter.close();
+        System.out.println();
+//        noName(letterUseInSample, key, 0, mostCommonTrigram, sampleList, results, sampleWordsList);
+//        DecodedStringOfRandomSub[] resultsAsArray = new DecodedStringOfRandomSub[results.size()];
+//        results.toArray(resultsAsArray);
+//        Arrays.sort(resultsAsArray, (o1, o2) -> {
+//            if (o1.getScore() > o2.getScore()) return 1;
+//            if (o1.getScore() < o2.getScore()) return -1;
+//            return 0;
+//        });
+    }
+
+    private static TreeMap<String, Integer> getTwoLetterWordFromCipher(String[] sampleWordsList) {
+        TreeMap<String, Integer> result = new TreeMap<>();
+        for (String word : sampleWordsList) {
+            if (word.length() == 2) {
+                if (result.containsKey(word)) {
+                    result.put(word, result.get(word) + 1);
+                } else {
+                    result.put(word, 1);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static HashSet<String> getOneLetterWordFromCipher(String[] sampleWordsList) {
+        HashSet<String> oneLetterWordFromCipher = new HashSet<>();
+        for (String word : sampleWordsList) {
+            if (word.length() == 1) {
+                oneLetterWordFromCipher.add(word);
+            }
+        }
+        return oneLetterWordFromCipher;
+    }
+
+    private static void getKeyFromFile(TreeMap<Character, Character> key) throws Exception {
+        FileReader fileReader = new FileReader("sourceFile/Cipher Letter Frequency.csv");
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line = bufferedReader.readLine();
+        boolean isLineContainNewlineChar = false;
+
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.equals("")) {
+                line = bufferedReader.readLine();
+                isLineContainNewlineChar = true;
+//                String plainCharacterAsString = lineComponents[2];
+//                Character plainCharacter = plainCharacterAsString.charAt(0);
+            }
+            String[] lineComponents = line.split("\\t+");
+            Character cipherCharacter;
+            if (isLineContainNewlineChar) {
+                cipherCharacter = '\n';
+                isLineContainNewlineChar = false;
+            } else {
+                cipherCharacter = lineComponents[0].charAt(0);
+            }
+            Character plainCharacter;
+            if (lineComponents.length == 3) {
+                String plainCharacterAsString = lineComponents[2];
+                plainCharacter = plainCharacterAsString.charAt(0);
+                if (plainCharacter == 's') {
+                    key.put(cipherCharacter, ' ');
+                } else {
+                    key.put(cipherCharacter, plainCharacter);
+                }
+            } else if (lineComponents.length == 2) {
+                plainCharacter = '*';
+                key.put(cipherCharacter, plainCharacter);
+            } else throw new Exception("Strange thing happens!");
+        }
+
+    }
+
+    private static void saveCipherLetterFrequencyToFile(ArrayList<CharacterFrequency> cipherFreqTable) throws IOException {
+        PrintWriter outputStream = null;
+        try {
+            outputStream = new PrintWriter(new FileWriter("sourceFile/Cipher Letter Frequency.csv"));
+            outputStream.println("Character\tFrequency\tKey");
+            for (CharacterFrequency characterFrequency : cipherFreqTable) {
+                if (characterFrequency.getFrequency() == 0) break;
+                outputStream.print(characterFrequency.getCharacter() + "\t\t\t");
+                outputStream.print(characterFrequency.getFrequency() + "\t\t\t\n");
+            }
+
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        }
     }
 
     private static ArrayList<SpaceAnalysis> analyzeSpacingCharacter(ArrayList<Character> old_string,
                                                                     ArrayList<CharacterFrequency> cipherFreqTable) {
         ArrayList<SpaceAnalysis> result = new ArrayList<>();
-        for (CharacterFrequency characterFrequency : cipherFreqTable) {
-            if (characterFrequency.getFrequency() == 0) break;
+
+//        EXPLAIN test what if each character is a space
+        for (CharacterFrequency cipherChar : cipherFreqTable) {
+            if (cipherChar.getFrequency() == 0) break;
 //            TODO solve unchecked casting if have time
-            ArrayList<Character> new_string = (ArrayList<Character>) old_string.clone();
-            for (int i = 0; i < new_string.size(); i++) {
-                if (new_string.get(i) == characterFrequency.getCharacter()) {
-                    new_string.set(i, ' ');
+            ArrayList<Character> newStringL = (ArrayList<Character>) old_string.clone();
+//            EXPLAIN replace cipherChar with space
+            if (cipherChar.getCharacter() == ' ') {
+                for (int i = 0; i < newStringL.size(); i++) {
+                    if (newStringL.get(i) == cipherChar.getCharacter()) {
+                        newStringL.set(i, ' ');
+                    }
+                }
+            } else {
+                for (int i = 0; i < newStringL.size(); i++) {
+                    if (newStringL.get(i) == ' ') {
+                        newStringL.set(i, 'z');
+                    }
+                    if (newStringL.get(i) == cipherChar.getCharacter()) {
+                        newStringL.set(i, ' ');
+                    }
                 }
             }
-            String new_string_as_String = getStringRepresentation(new_string);
-            String[] words = new_string_as_String.split(" ");
+            String newStringS = getStringRepresentation(newStringL);
+            String[] words = newStringS.split(" ");
+
+//            EXPLAIN identify max word length
             int maxWordLength = 0;
+            TreeMap<Integer, Integer> wordLengthAnalysis = new TreeMap<>();
             for (String word : words) {
-                if (word.length() > maxWordLength) maxWordLength = word.length();
+                int wordLength = word.length();
+                if (wordLength > maxWordLength) maxWordLength = wordLength;
+                if (wordLengthAnalysis.containsKey(wordLength))
+                    wordLengthAnalysis.put(wordLength, wordLengthAnalysis.get(wordLength) + 1);
+                else wordLengthAnalysis.put(wordLength, 1);
             }
-            result.add(new SpaceAnalysis(new_string_as_String, maxWordLength, characterFrequency.getCharacter()));
+            result.add(new SpaceAnalysis(newStringS, maxWordLength, cipherChar.getCharacter(), wordLengthAnalysis));
         }
         result.sort((o1, o2) -> {
             if (o1.getMax_word_size() > o2.getMax_word_size()) return 1;
@@ -98,23 +230,25 @@ public class Q4 {
     }
 
     private static void noName(ArrayList<CharacterFrequency> cipherFreqTable, TreeMap<Character, Character> key,
-                               int index, TreeMap<String, Double> mostCommonTriagram, ArrayList<Character> cipherText, HashSet<DecodedStringOfRandomSub> results) throws IOException {
+                               int index, TreeMap<String, Double> mostCommonTriagram, HashSet<DecodedStringOfRandomSub> results, String[] sampleWordsList) throws IOException {
         if (index == cipherFreqTable.size()) {
-            if (key.values().contains(' ')) {
-                DecodedStringOfRandomSub decodedString = crackRandomSubstitution(key, cipherText, mostCommonTriagram);
-                if (decodedString.getScore() < THRESHOLD)
-                    results.add(decodedString);
-            }
+            DecodedStringOfRandomSub decodedString = crackRandomSubstitution(key, mostCommonTriagram, sampleWordsList);
+            if (decodedString.getScore() < THRESHOLD)
+                results.add(decodedString);
+//            if (key.values().contains(' ')) {
+//            }
             return;
         }
         CharacterFrequency character = cipherFreqTable.get(index);
-        for (int i = 0; i < character.getPossibleCharacter().size(); i++) {
-            Character possibleCharacter = character.getPossibleCharacter().get(i);
+
+        TreeSet<Character> possibleCharacters = character.getPossibleCharacter();
+        for (Character aPossibleCharacter : possibleCharacters) {
+//            Character possibleCharacter = ((TreeSet<Character>) possibleCharacter).get(i);
             Collection<Character> values = key.values();
-            if (values.contains(possibleCharacter)) continue;
+            if (values.contains(aPossibleCharacter)) continue;
 //            TODOx be aware, what if in the end the character matches with nothing
-            key.put(character.getCharacter(), possibleCharacter);
-            noName(cipherFreqTable, key, index + 1, mostCommonTriagram, cipherText, results);
+            key.put(character.getCharacter(), aPossibleCharacter);
+            noName(cipherFreqTable, key, index + 1, mostCommonTriagram, results, sampleWordsList);
             key.remove(character.getCharacter());
         }
 //        if (key.containsKey(character.getCharacter()))
@@ -123,54 +257,97 @@ public class Q4 {
 //            throw new RuntimeException("All possible characters for character " + character.getCharacter() + " has been used up");
     }
 
-    private static void preparePossibleCharacter(ArrayList<CharacterFrequency> cipherFreqTable, ArrayList<CharacterFrequency> englishMonogram, ArrayList<SpaceAnalysis> spaceAnalyses) {
-        char cipherLetterForSpace = spaceAnalyses.get(0).getSpace();
-        int indexOfCipherLetterForSpace = 0;
-        for (int i = 0; i < cipherFreqTable.size(); i++) {
-            CharacterFrequency aCipherFreqTable = cipherFreqTable.get(i);
-            if (aCipherFreqTable.getCharacter() == cipherLetterForSpace) {
-                indexOfCipherLetterForSpace = i;
-                aCipherFreqTable.getPossibleCharacter().add(' ');
-                break;
-            }
+    private static void preparePossibleCharacter(ArrayList<CharacterFrequency> cipherFreqTable,
+                                                 ArrayList<CharacterFrequency> mostCommonMonogram,
+                                                 ArrayList<SpaceAnalysis> spaceAnalyses,
+                                                 HashSet<String> oneLetterWordFromCipher,
+                                                 TreeMap<String, Double> mostCommonOneLetterWord) {
+//        EXPLAIN: create an array to keep track which cipher letter has been processed
+        boolean[] usedIndexArray = new boolean[cipherFreqTable.size()];
+        for (int i = 0; i < usedIndexArray.length; i++) {
+            usedIndexArray[i] = false;
         }
 
-//        TODO this needs to be fixed
-        for (int i = 0; i < englishMonogram.size() - 1; i++) {
-            if (i == indexOfCipherLetterForSpace) continue;
-            ArrayList<Character> possibleCharacter = cipherFreqTable.get(i).getPossibleCharacter();
-            /*TODO ASSUMPTIONS:
+//        EXPLAIN: HANDLE SPACE
+//        ASSUMPTION spaceAnalyse[1/2/3/...] cannot be the space
+        char cipherLetterForSpace = spaceAnalyses.get(0).getSpace();
+        int indexOfSpace = indexOfLetter(cipherFreqTable, cipherLetterForSpace);
+        cipherFreqTable.get(indexOfSpace).getPossibleCharacter().add(' ');
+        usedIndexArray[indexOfSpace] = true;
+
+//        EXPLAIN use most common one letter word result
+        for (String oneLetterWord : oneLetterWordFromCipher) {
+            int indexOfOneLetterWord = indexOfLetter(cipherFreqTable, oneLetterWord.charAt(0));
+            for (Map.Entry<String, Double> entry : mostCommonOneLetterWord.entrySet()) {
+                cipherFreqTable.get(indexOfOneLetterWord).getPossibleCharacter().add(entry.getKey().charAt(0));
+                usedIndexArray[indexOfOneLetterWord] = true;
+            }
+        }
+//        TODOx this needs to be fixed
+//        EXPLAIN use English most common monogram result
+        int numberOfLetterAdded = 0;
+        for (int i = 0; i < mostCommonMonogram.size() && numberOfLetterAdded < englishMonogram; i++) {
+            if (usedIndexArray[i]) continue;
+            TreeSet<Character> possibleCharacter = cipherFreqTable.get(i).getPossibleCharacter();
+            /*ASSUMPTION
+            1. the distribution of cipher letter is the same as English letter
+            2. Top 5 letters of the ciphertext mataches top 5 letter of English most common monogram
+            */
+            for (int j = 0; j < englishMonogram; j++) {
+                possibleCharacter.add(mostCommonMonogram.get(j).getCharacter());
+            }
+//            usedIndex.add(i);
+            usedIndexArray[i] = true;
+            numberOfLetterAdded++;
+            /*ASS-UMPTIONS:
             possible character is in the range of [starting index; st. index +5]
             possible character is limited in the 26 alphabet letters*/
-            int startingIndex = (int) ((float) 22 / 25 * i);
-            for (int j = startingIndex; j < startingIndex + 5; j++) {
-                possibleCharacter.add(englishMonogram.get(j).getCharacter());
-            }
+//            int startingIndex = (int) ((float) 22 / 25 * i);
+//            for (int j = startingIndex; j < startingIndex + 5; j++) {
+//                possibleCharacter.add(englishMonogram.get(j).getCharacter());
+//            }
 //            possibleCharacter.add(' ');
         }
-        for (int i = englishMonogram.size() - 1; i < cipherFreqTable.size(); i++) {
-            /*TODO ASSUMPTIONS:
-            possible character of uncommon character is " "*/
+        for (int i = mostCommonMonogram.size() - 1; i < cipherFreqTable.size(); i++) {
+            /*ASSUMPTIONS:
+            possible character of uncommon character is " " > this is false for sure*/
             if (cipherFreqTable.get(i).getFrequency() != 0) cipherFreqTable.get(i).getPossibleCharacter().add(' ');
             else break;
         }
     }
 
-    private static DecodedStringOfRandomSub crackRandomSubstitution(TreeMap<Character, Character> key, ArrayList<Character> old_string, TreeMap<String, Double> mostCommonTriagram) throws IOException {
-//        ArrayList<Character> old_string = Q1.readFile(path);
-//        TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
-
-        ArrayList<Character> newString = new ArrayList<>();
-        for (Character character : old_string) {
-            Character newCharacter = key.get(character);
-//            if (newCharacter == null) {
-//                newString.add(' ');
-//            } else {
-//            }
-            newString.add(newCharacter);
+    private static int indexOfLetter(ArrayList<CharacterFrequency> cipherFreqTable, char searchCharacter) {
+        for (int i = 0; i < cipherFreqTable.size(); i++) {
+            CharacterFrequency aCipherLetter = cipherFreqTable.get(i);
+            if (aCipherLetter.getCharacter() == searchCharacter) {
+                return i;
+            }
         }
+        return -1;
+    }
+
+    private static DecodedStringOfRandomSub crackRandomSubstitution(TreeMap<Character, Character> key, TreeMap<String, Double> mostCommonTriagram, String[] sampleWordsList) throws IOException {
+//        String[] plaintextWordList = new String[sampleWordsList.length];
+        StringBuilder plainTextWordListSB = new StringBuilder();
+        for (String sampleWord : sampleWordsList) {
+            StringBuilder plainWord = new StringBuilder("");
+            for (int j = 0; j < sampleWord.length(); j++) {
+                plainWord.append(key.get(sampleWord.charAt(j)));
+                plainTextWordListSB.append(key.get(sampleWord.charAt(j)));
+            }
+//            plaintextWordList[i] = plainWord.toString();
+            plainTextWordListSB.append(' ');
+        }
+
+//        new String()
+        String decodedString = plainTextWordListSB.toString();
+//        ArrayList<Character> newString = new ArrayList<>();
+//        for (Character character : old_string) {
+//            Character newCharacter = key.get(character);
+//            newString.add(newCharacter);
+//        }
 //        TODOx need to check latter
-        String decodedString = getStringRepresentation(newString);
+//        String decodedString = getStringRepresentation(newString);
 //        String decodedString = newString.stream().map(e->e.toString()).collect(Collectors.joining());
         DecodedStringOfRandomSub decodedStringOfRandomSub = new DecodedStringOfRandomSub(decodedString, key, scoringUsingTrigram(decodedString, mostCommonTriagram));
         if (decodedStringOfRandomSub.getScore() < THRESHOLD) {
@@ -187,7 +364,7 @@ public class Q4 {
         double score = 0;
 
         for (String word : words) {
-            /*TODO ASSUMPTION: not exist word with length greater than 20*/
+            /*ASSUMPTION: not exist word with length greater than 20*/
             if (word.length() > 20) return 0;
             if (word.length() < 12 && word.length() >= 3) {
                 for (int i = 0; i < word.length() - 2; i++) {
@@ -266,16 +443,19 @@ public class Q4 {
         private String string;
         private int max_word_size;
         private char space;
-
-        SpaceAnalysis(String string, int max_word_size) {
-            this.string = string;
-            this.max_word_size = max_word_size;
-        }
+        private TreeMap<Integer, Integer> wordLengthAnalysis;
 
         SpaceAnalysis(String string, int max_word_size, char space) {
             this.string = string;
             this.max_word_size = max_word_size;
             this.space = space;
+        }
+
+        SpaceAnalysis(String string, int max_word_size, char space, TreeMap<Integer, Integer> wordLengthAnalysis) {
+            this.string = string;
+            this.max_word_size = max_word_size;
+            this.space = space;
+            this.wordLengthAnalysis = wordLengthAnalysis;
         }
 
         int getMax_word_size() {
@@ -302,15 +482,15 @@ public class Q4 {
     static class CharacterFrequency implements Comparator<CharacterFrequency> {
         char character;
         int frequency;
-        ArrayList<Character> possibleCharacter;
+        TreeSet<Character> possibleCharacter;
 
         CharacterFrequency(char character, int frequency) {
-            possibleCharacter = new ArrayList<>();
+            possibleCharacter = new TreeSet<>();
             this.character = character;
             this.frequency = frequency;
         }
 
-        ArrayList<Character> getPossibleCharacter() {
+        TreeSet<Character> getPossibleCharacter() {
             return possibleCharacter;
         }
 

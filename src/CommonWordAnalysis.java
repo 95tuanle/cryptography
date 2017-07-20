@@ -46,7 +46,7 @@ class CommonWordAnalysis {
         PrintWriter outputStream = null;
 
         try {
-            outputStream = new PrintWriter(new FileWriter("Frequency analysis.csv"));
+            outputStream = new PrintWriter(new FileWriter("Word length analysis.csv"));
             outputStream.println("Length\tFrequency");
             for (int i = 0; i < frequency.length; i++) {
                 outputStream.print(i);
@@ -169,5 +169,32 @@ class CommonWordAnalysis {
             numberOrReadLines++;
         }
         return total_count;
+    }
+
+    static TreeMap<String, Double> processDoubleFile() {
+        return null;
+    }
+
+    static TreeMap<String, Double> processInitialLetterFile() {
+        return null;
+    }
+
+    static TreeMap<String, Double> processOneLetterWordFile() {
+        TreeMap<String, Double> oneLetterWord = new TreeMap<>();
+        oneLetterWord.put("A", 0.0);
+        oneLetterWord.put("I", 0.0);
+        return oneLetterWord;
+    }
+
+    static TreeMap<String, Double> processTwoLetterWordFile() {
+        return null;
+    }
+
+    static TreeMap<String, Double> processThreeLetterWordFile() {
+        return null;
+    }
+
+    static TreeMap<String, Double> processFourLetterWordFile() {
+        return null;
     }
 }
