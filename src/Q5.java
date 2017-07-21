@@ -4,22 +4,26 @@ import java.util.TreeMap;
 
 public class Q5 {
     public static void main(String[] args) throws IOException {
-        ArrayList<Character> cipherTextList = Q1.readFile("sourceFile/msg5.enc");
+        ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
+        ArrayList<Character> cipherTextL = Q1.readFile("sourceFile/msg5.enc");
+        ArrayList<Integer> cipherTextI = Q1.convertFromASCIIToDenisCode(cipherTextL, alphabetFile);
         ArrayList<Character> key = Q1.readFile("sourceFile/Answer for Q4.txt");
+        ArrayList<Integer> keyI = Q1.convertFromASCIIToDenisCode(key, alphabetFile);
         TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(-1);
 
 //        HashSet<ArrayList> result = new HashSet<>();
         ArrayList<DecodedString> resultTS = new ArrayList<>();
 
-        for (int i = 0; i < key.size() - cipherTextList.size() - 1; i++) {
-            ArrayList<Character> plainText = new ArrayList<>();
-            for (int j = i; j < cipherTextList.size() + i; j++) {
-                Character cipherChar = cipherTextList.get(j - i);
-                Character keyChar = key.get(j);
-                Character plainChar = (char) (cipherChar ^ keyChar);
-                plainText.add(plainChar);
+        for (int i = 0; i < keyI.size() - cipherTextI.size(); i++) {
+            ArrayList<Integer> plainTextI = new ArrayList<>();
+            for (int j = i; j < cipherTextI.size() + i; j++) {
+                Integer cipherChar = cipherTextI.get(j - i);
+                Integer keyChar = keyI.get(j);
+                Integer plainCharI = ((cipherChar - keyChar + alphabetFile.size()) % alphabetFile.size());
+                plainTextI.add(plainCharI);
             }
-            String decodedString = Q4.getStringRepresentation(plainText);
+            String decodedString = Q1.decodeString(plainTextI, alphabetFile);
+            int positionOfWrong = decodedString.indexOf("27NOLOGY");
             resultTS.add(new DecodedString(decodedString, Q1.scoring(decodedString, mostCommonWords), i));
 //            result.add(plainText);
         }

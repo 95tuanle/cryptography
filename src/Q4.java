@@ -134,6 +134,8 @@ public class Q4 {
                 plainCharacter = plainCharacterAsString.charAt(0);
                 if (plainCharacter == 's') {
                     key.put(cipherCharacter, ' ');
+                } else if (plainCharacter == 'n') {
+                    key.put(cipherCharacter, '\n');
                 } else {
                     key.put(cipherCharacter, plainCharacter);
                 }
@@ -377,7 +379,7 @@ public class Q4 {
         return score;
     }
 
-    static String getStringRepresentation(ArrayList<Character> list) {
+    private static String getStringRepresentation(ArrayList<Character> list) {
         StringBuilder builder = new StringBuilder(list.size());
         for (Character ch : list) {
             builder.append(ch);

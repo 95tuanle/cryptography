@@ -90,7 +90,7 @@ public class Q1 {
 
     }
 
-    private static String decodeString(ArrayList<Integer> originalStringInDenisCode, ArrayList<Character> alphabetFile) {
+    static String decodeString(ArrayList<Integer> originalStringInDenisCode, ArrayList<Character> alphabetFile) {
         /*
         * 1. Convert orinial to DenisCode
         * 2. Plus 1
@@ -107,7 +107,7 @@ public class Q1 {
         StringBuilder stringAfterConvertedStringForm = new StringBuilder();
 
         for (Integer anOriginalCharacter : originalStringInDenisCode) {
-//            Character correspondingValue = denisCode.get(anOriginalCharacter);
+            //            Character correspondingValue = denisCode.get(anOriginalCharacter);
 //            stringAfterConverted.add(correspondingValue);
             stringAfterConvertedStringForm.append(alphabetFile.get(anOriginalCharacter));
         }
@@ -159,7 +159,7 @@ public class Q1 {
         return in;
     }
 
-    private static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
+    static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
 //        TODOx if have time think of a more efficient algorithm
 //        HashMap<Character, Integer> denisCode = new HashMap<>();
 //        for (int i = 0; i < alphabetFile.size(); i++) {
