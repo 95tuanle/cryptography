@@ -36,23 +36,23 @@ public class Q6 {
         DecodedString[] resultsAsArray = new DecodedString[results.size()];
         results.toArray(resultsAsArray);
 //        DecodedString[] arrayToSaveResultInto = new DecodedString[commonDivisors.size()*alphabetFileSize];
-        for (int i : commonDivisors) {
-            if (i < alphabetFileSize) {
-                for (int j = 0; j < commonDivisors.size(); j++) {
+        for (int i = 0; i < commonDivisors.size(); i++) {
+//            if (i < alphabetFileSize) {
+                for (int j = 0; j < alphabetFileSize; j++) {
                     ArrayList<Character> tempChars = new ArrayList<>();
-                    String decodedString = resultsAsArray[j].getDecodedString();
+                    String decodedString = resultsAsArray[i].getDecodedString();
                     for (char c : decodedString.toCharArray()) {
                         tempChars.add(c);
                     }
                     DecodedString[] resultsAsArrayFinal = new DecodedString[old_string.size()];
                     ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
-                    Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, i);
+                    Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
 //                    arrayToSaveResultInto=resultsAsArrayFinal.clone();
                     // TODO no hashcode
-                    if (resultsAsArrayFinal[i].getScore() > 20) {
-                        System.out.println("\n" + resultsAsArrayFinal[i].getKey());
-                        System.out.println("Score  " + resultsAsArrayFinal[i].getScore());
-                        System.out.println("\n\n" + resultsAsArrayFinal[i].getDecodedString() + "\n");
+                    if (resultsAsArrayFinal[j].getScore() > 20) {
+                        System.out.println("\n" + resultsAsArrayFinal[j].getKey());
+                        System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
+                        System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
                     }
 //                Arrays.sort(resultsAsArrayFinal, resultsAsArrayFinal[0]);
 //                System.out.println("TOP 3 RESULTS\n");
@@ -62,8 +62,7 @@ public class Q6 {
 //                    System.out.println("Decoded string:\n\n" + resultsAsArrayFinal[e].getDecodedString() + "\n");
 //                }
                 }
-            }
-
+//            }
         }
 //        Arrays.sort(arrayToSaveResultInto, arrayToSaveResultInto[0]);
 //        System.out.println("TOP 3 RESULTS\n");

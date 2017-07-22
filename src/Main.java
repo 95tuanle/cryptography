@@ -6,6 +6,7 @@ public class Main {
 //        Q1.main(arguments);
 //        Q2.main(arguments);
 //        Q3.main(arguments);
-        Q6.main(arguments);
+//        Q6.main(arguments);
+        Q7.main(arguments);
     }
 }
