@@ -3,9 +3,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
-/**
- * Created by s3574983 on 13/07/2017.
- */
 public class Q7 {
     /*
     * gOI HAM SO UNG VOI CAU SO 1 VA CAU SO 2 RA
@@ -21,16 +18,23 @@ public class Q7 {
 //        System.out.println("Check if the message is encoded using caesar first, then transposition (same key)");
 //        Q6.workingOnQuestionSix("sourceFile/msg7.enc");
         System.out.println("Check if the message is encoded using transposition first, then caesar (different keys + same key)");
+<<<<<<< HEAD
         workingOnQuestionSeven("sourceFile/msg7.enc");
         System.out.println("\n\n");
 
         System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
         workingOnQuestionSevenPart2("sourceFile/msg7.enc");
         System.out.println("\n\n");
+=======
+        workingOnQuestionSeven();
+        System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
+        workingOnQuestionSevenPart2();
+
+>>>>>>> 2b46e1cc0dec9f53f05133a582e268eb8f3369b8
     }
 
-    private static void workingOnQuestionSevenPart2(String path) throws IOException {
-        ArrayList<Character> old_string = Q1.readFile(path);
+    private static void workingOnQuestionSevenPart2() throws IOException {
+        ArrayList<Character> old_string = Q1.readFile("sourceFile/msg7.enc");
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
         TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
@@ -63,15 +67,16 @@ public class Q7 {
         }
     }
 
-    static void workingOnQuestionSeven(String path) throws IOException {
+    private static void workingOnQuestionSeven() throws IOException {
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         int alphabetFileSize = alphabetFile.size();
-        ArrayList<Character> old_string = Q1.readFile(path);
+        ArrayList<Character> old_string = Q1.readFile("sourceFile/msg7.enc");
         ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(old_string, alphabetFile);
         DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
         TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
         ArrayList<DecodedString> results = new ArrayList<>();
+
         for (int i = 0; i < alphabetFile.size(); i++) {
             Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
             for (int x : commonDivisors) {
@@ -80,6 +85,7 @@ public class Q7 {
                     for (int j = 0; j < tempString.length(); j++) {
                         readingResult.add(tempString.charAt(j));
                     }
+//                    TODO method actualCrack has been converted to method crackTransposition
                     Q2.actualCrack(x, readingResult, results, mostCommonWords);
 //                    DecodedString[] resultsAsArrayX = new DecodedString[results.size()];
 //                    results.toArray(resultsAsArrayX);
