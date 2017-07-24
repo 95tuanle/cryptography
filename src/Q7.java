@@ -4,9 +4,6 @@ import java.util.Arrays;
 import java.util.TreeMap;
 
 public class Q7 {
-    /*
-    * gOI HAM SO UNG VOI CAU SO 1 VA CAU SO 2 RA
-    * */
     public static void main(String[] args) throws IOException {
         System.out.println("Check if the message is encoded using transposition");
         Q2.crackTransposition("sourceFile/msg7.enc", -1);
@@ -14,26 +11,14 @@ public class Q7 {
         System.out.println("Check if the message is encoded using caesar");
         Q1.crackCaesar("sourceFile/msg7.enc", -1);
         System.out.println("\n\n");
-//        System.out.println("Check if the message is encoded using caesar first, then transposition (same key)");
-//        Q6.workingOnQuestionSix("sourceFile/msg7.enc");
         System.out.println("Check if the message is encoded using transposition first, then caesar (different keys + same key)");
-        workingOnQuestionSeven();
+        decodeWithFirstCaesarAndThenTranspositionDifferentKeysAndSameKey();
         System.out.println("\n\n");
-//<<<<<<< HEAD
-//        workingOnQuestionSeven("sourceFile/msg7.enc");
-//        System.out.println("\n\n");
-//8
-//        System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
-//        workingOnQuestionSevenPart2("sourceFile/msg7.enc");
-//        System.out.println("\n\n");
-//=======
-        workingOnQuestionSeven();
         System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
-        workingOnQuestionSevenPart2();
-//>>>>>>> 2b46e1cc0dec9f53f05133a582e268eb8f3369b8
+        decodeWithTranspositionFirstAndThenCaesarDifferentKeysAndSameKey();
     }
 
-    private static void workingOnQuestionSevenPart2() throws IOException {
+    private static void decodeWithTranspositionFirstAndThenCaesarDifferentKeysAndSameKey() throws IOException {
         ArrayList<Character> old_string = Q1.readFile("sourceFile/msg7.enc");
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
@@ -47,7 +32,6 @@ public class Q7 {
         results.toArray(resultsAsArray);
         System.out.println("TOP RESULTS\n");
         for (int i = 0; i < commonDivisors.size(); i++) {
-//            int x = 0;
             for (int j = 0; j < alphabetFileSize; j++) {
                 ArrayList<Character> tempChars = new ArrayList<>();
                 String decodedString = resultsAsArray[i].getDecodedString();
@@ -63,11 +47,10 @@ public class Q7 {
                     System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
                 }
             }
-//            x++;
         }
     }
 
-    private static void workingOnQuestionSeven() throws IOException {
+    private static void decodeWithFirstCaesarAndThenTranspositionDifferentKeysAndSameKey() throws IOException {
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         int alphabetFileSize = alphabetFile.size();
         ArrayList<Character> old_string = Q1.readFile("sourceFile/msg7.enc");
@@ -76,21 +59,16 @@ public class Q7 {
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
         TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
         ArrayList<DecodedString> results = new ArrayList<>();
-
         for (int i = 0; i < alphabetFile.size(); i++) {
             Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
             for (int x : commonDivisors) {
-                    String tempString = resultsAsArray[i].getDecodedString();
-                    ArrayList<Character> readingResult = new ArrayList<>();
-                    for (int j = 0; j < tempString.length(); j++) {
-                        readingResult.add(tempString.charAt(j));
-                    }
-//                    TODO method actualCrack has been converted to method crackTransposition
-                    Q2.actualCrack(x, readingResult, results, mostCommonWords);
-//                    DecodedString[] resultsAsArrayX = new DecodedString[results.size()];
-//                    results.toArray(resultsAsArrayX);
-//                    System.out.println("RESULT:\n");
-//                    System.out.println("Decoded string:\n\n" + " ** " + "\n\n");
+                String tempString = resultsAsArray[i].getDecodedString();
+                ArrayList<Character> readingResult = new ArrayList<>();
+                for (int j = 0; j < tempString.length(); j++) {
+                    readingResult.add(tempString.charAt(j));
+                }
+                // TODO method actualCrack has been converted to method crackTransposition
+                Q2.actualCrack(x, readingResult, results, mostCommonWords);
             }
         }
         DecodedString[] resultsAsArrayX = new DecodedString[results.size()];
