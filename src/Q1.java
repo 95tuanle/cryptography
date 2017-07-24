@@ -193,7 +193,23 @@ class DecodedString extends DecodedStringCore {
     }
 }
 
+class DecodedStringVernam extends DecodedStringCore {
+    private ArrayList<Character> key;
 
+    DecodedStringVernam(String decodedString, double score, ArrayList<Character> key) {
+        super(decodedString, score);
+        this.key = key;
+    }
+
+    ArrayList<Character> getKey() {
+        return key;
+    }
+
+    public String toString() {
+        return "Key = " + key + "\n" + super.toString();
+    }
+
+}
 //class DecodedString implements Comparator<DecodedString> {
 //    private String decodedString;
 //    private int key;

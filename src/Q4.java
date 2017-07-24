@@ -19,6 +19,23 @@ import java.util.*;
     if score > than certain THRESHOLD > print
 * */
 
+/*SUM-UP
+* 1. Space analysis: analyzeSpacingCharacter
+* 2. Monogram analysis: createFrequencyTable
+* 3. Most common one letter word analysis: getOneLetterWordFromCipher
+* 4. Most common two letter words analysis: getTwoLetterWordFromCipher
+* 5. Guessing
+* */
+
+/*How to guess?
+* 1. Assuming that a cipher letter is something
+* 2. Look for words that satisfy any of these criteria
+*   - Most of the letters have been identified
+*   - The first syllable has been identified
+*   - Contain different types of characters
+* 3. Check in dictionary possible matching words
+* 4. Use your intuition to determine whether your assumption is correct*/
+
 public class Q4 {
     private static final int SAMPLE_ENDING = 635;
     private static final int THRESHOLD = -450;
@@ -26,6 +43,7 @@ public class Q4 {
 
     public static void main(String[] args) throws Exception {
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
+//        TODOx design an algorithm to automate the process > shouldn't do it
         ArrayList<Character> old_string = Q1.readFile("sourceFile/msg4.enc");
 
         ArrayList<CharacterFrequency> mostCommonMonogram = processEnglishMonogram();
@@ -379,7 +397,7 @@ public class Q4 {
         return score;
     }
 
-    private static String getStringRepresentation(ArrayList<Character> list) {
+    static String getStringRepresentation(ArrayList<Character> list) {
         StringBuilder builder = new StringBuilder(list.size());
         for (Character ch : list) {
             builder.append(ch);

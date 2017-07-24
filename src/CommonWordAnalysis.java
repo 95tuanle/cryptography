@@ -76,8 +76,7 @@ class CommonWordAnalysis {
                     new BufferedReader(fileReader);
 //            int pos = 0;
             double total_count = 0;
-            int numberOrReadLines = 0;
-            total_count = getTotalCount(mostCommonWords, bufferedReader, total_count, numberOrReadLines);
+            total_count = getTotalCount(mostCommonWords, bufferedReader, total_count, numberOfWords);
             for (Map.Entry<String, Double> entry : mostCommonWords.entrySet()) {
                 entry.setValue(Math.log(entry.getValue() / total_count));
             }
@@ -138,7 +137,7 @@ class CommonWordAnalysis {
 //            int pos = 0;
             double total_count = 0;
             int numberOrReadLines = 0;
-            total_count = getTotalCount(mostCommonTriagrams, bufferedReader, total_count, numberOrReadLines);
+            total_count = getTotalCount(mostCommonTriagrams, bufferedReader, total_count, numberOfWords);
             for (Map.Entry<String, Double> entry : mostCommonTriagrams.entrySet()) {
                 entry.setValue(Math.log(entry.getValue() / total_count));
             }
@@ -159,9 +158,11 @@ class CommonWordAnalysis {
         return null;
     }
 
-    private static double getTotalCount(TreeMap<String, Double> mostCommonTriagrams, BufferedReader bufferedReader, double total_count, int numberOrReadLines) throws IOException {
+    private static double getTotalCount(TreeMap<String, Double> mostCommonTriagrams, BufferedReader bufferedReader,
+                                        double total_count, int numberOfWords) throws IOException {
         String line;
-        while ((line = bufferedReader.readLine()) != null) {
+        int numberOrReadLines = 0;
+        while ((line = bufferedReader.readLine()) != null && numberOrReadLines <= numberOfWords) {
             String[] lineComponents = line.split(" ");
             Double count = Double.valueOf(lineComponents[1]);
             mostCommonTriagrams.put(lineComponents[0], count);
