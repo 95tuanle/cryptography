@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TreeMap;
 
 /**
@@ -12,15 +13,20 @@ public class Q7 {
     public static void main(String[] args) throws IOException {
         System.out.println("Check if the message is encoded using transposition");
         Q2.crackTransposition("sourceFile/msg7.enc", -1);
+        System.out.println("\n\n");
         System.out.println("Check if the message is encoded using caesar");
         Q1.crackCaesar("sourceFile/msg7.enc", -1);
+        System.out.println("\n\n");
+
 //        System.out.println("Check if the message is encoded using caesar first, then transposition (same key)");
 //        Q6.workingOnQuestionSix("sourceFile/msg7.enc");
         System.out.println("Check if the message is encoded using transposition first, then caesar (different keys + same key)");
         workingOnQuestionSeven("sourceFile/msg7.enc");
+        System.out.println("\n\n");
+
         System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
         workingOnQuestionSevenPart2("sourceFile/msg7.enc");
-
+        System.out.println("\n\n");
     }
 
     private static void workingOnQuestionSevenPart2(String path) throws IOException {
@@ -35,6 +41,7 @@ public class Q7 {
         }
         DecodedString[] resultsAsArray = new DecodedString[results.size()];
         results.toArray(resultsAsArray);
+        System.out.println("TOP RESULTS\n");
         for (int i = 0; i < commonDivisors.size(); i++) {
 //            int x = 0;
             for (int j = 0; j < alphabetFileSize; j++) {
@@ -46,9 +53,11 @@ public class Q7 {
                 DecodedString[] resultsAsArrayFinal = new DecodedString[old_string.size()];
                 ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
                 Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
-                System.out.println("\n" + resultsAsArrayFinal[j].getKey());
-                System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
-                System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
+                if (resultsAsArrayFinal[j].getScore() > 9) {
+                    System.out.println("\n" + resultsAsArrayFinal[j].getKey());
+                    System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
+                    System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
+                }
             }
 //            x++;
         }
@@ -72,13 +81,18 @@ public class Q7 {
                         readingResult.add(tempString.charAt(j));
                     }
                     Q2.actualCrack(x, readingResult, results, mostCommonWords);
-                    DecodedString[] resultsAsArrayX = new DecodedString[results.size()];
-                    results.toArray(resultsAsArrayX);
-                    System.out.println("RESULT:\n");
-                    // TODO get the string value from results array which have key = x and print it out in the next line
-                    System.out.println("Decoded string:\n\n" + " *TODO* " + "\n\n");
+//                    DecodedString[] resultsAsArrayX = new DecodedString[results.size()];
+//                    results.toArray(resultsAsArrayX);
+//                    System.out.println("RESULT:\n");
+//                    System.out.println("Decoded string:\n\n" + " ** " + "\n\n");
             }
         }
-
+        DecodedString[] resultsAsArrayX = new DecodedString[results.size()];
+        results.toArray(resultsAsArrayX);
+        Arrays.sort(resultsAsArrayX, resultsAsArrayX[0]);
+        System.out.println("TOP 3 RESULTS\n");
+        for (int i = resultsAsArrayX.length - 1; i > resultsAsArrayX.length - 3 - 1; i--) {
+            System.out.println(resultsAsArrayX[i]);
+        }
     }
 }

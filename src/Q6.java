@@ -49,7 +49,7 @@ public class Q6 {
                     Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
 //                    arrayToSaveResultInto=resultsAsArrayFinal.clone();
                     // TODO no hashcode
-                    if (resultsAsArrayFinal[j].getScore() > 20) {
+                    if (resultsAsArrayFinal[j].getScore() > 8) {
                         System.out.println("\n" + resultsAsArrayFinal[j].getKey());
                         System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
                         System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
