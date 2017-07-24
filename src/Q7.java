@@ -14,23 +14,23 @@ public class Q7 {
         System.out.println("Check if the message is encoded using caesar");
         Q1.crackCaesar("sourceFile/msg7.enc", -1);
         System.out.println("\n\n");
-
 //        System.out.println("Check if the message is encoded using caesar first, then transposition (same key)");
 //        Q6.workingOnQuestionSix("sourceFile/msg7.enc");
         System.out.println("Check if the message is encoded using transposition first, then caesar (different keys + same key)");
-<<<<<<< HEAD
-        workingOnQuestionSeven("sourceFile/msg7.enc");
+        workingOnQuestionSeven();
         System.out.println("\n\n");
-
-        System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
-        workingOnQuestionSevenPart2("sourceFile/msg7.enc");
-        System.out.println("\n\n");
-=======
+//<<<<<<< HEAD
+//        workingOnQuestionSeven("sourceFile/msg7.enc");
+//        System.out.println("\n\n");
+//8
+//        System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
+//        workingOnQuestionSevenPart2("sourceFile/msg7.enc");
+//        System.out.println("\n\n");
+//=======
         workingOnQuestionSeven();
         System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
         workingOnQuestionSevenPart2();
-
->>>>>>> 2b46e1cc0dec9f53f05133a582e268eb8f3369b8
+//>>>>>>> 2b46e1cc0dec9f53f05133a582e268eb8f3369b8
     }
 
     private static void workingOnQuestionSevenPart2() throws IOException {

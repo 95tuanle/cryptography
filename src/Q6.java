@@ -34,32 +34,31 @@ public class Q6 {
         results.toArray(resultsAsArray);
 
         for (int i = 0; i < commonDivisors.size(); i++) {
-<<<<<<< HEAD
-//            if (i < alphabetFileSize) {
-                for (int j = 0; j < alphabetFileSize; j++) {
-                    ArrayList<Character> tempChars = new ArrayList<>();
-                    String decodedString = resultsAsArray[i].getDecodedString();
-                    for (char c : decodedString.toCharArray()) {
-                        tempChars.add(c);
-                    }
-                    DecodedString[] resultsAsArrayFinal = new DecodedString[old_string.size()];
-                    ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
-                    Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
-//                    arrayToSaveResultInto=resultsAsArrayFinal.clone();
-                    // TODO no hashcode
-                    if (resultsAsArrayFinal[j].getScore() > 8) {
-                        System.out.println("\n" + resultsAsArrayFinal[j].getKey());
-                        System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
-                        System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
-                    }
-//                Arrays.sort(resultsAsArrayFinal, resultsAsArrayFinal[0]);
-//                System.out.println("TOP 3 RESULTS\n");
-//                for (int e = resultsAsArrayFinal.length - 1; e > resultsAsArrayFinal.length - numberOfPrintResult - 1; e--) {
-//                    System.out.println("Key    " + resultsAsArrayFinal[e].getKey());
-//                    System.out.println("Score  " + resultsAsArrayFinal[e].getScore());
-//                    System.out.println("Decoded string:\n\n" + resultsAsArrayFinal[e].getDecodedString() + "\n");
-//                }
-=======
+//<<<<<<< HEAD
+////            if (i < alphabetFileSize) {
+//                for (int j = 0; j < alphabetFileSize; j++) {
+//                    ArrayList<Character> tempChars = new ArrayList<>();
+//                    String decodedString = resultsAsArray[i].getDecodedString();
+//                    for (char c : decodedString.toCharArray()) {
+//                        tempChars.add(c);
+//                    }
+//                    DecodedString[] resultsAsArrayFinal = new DecodedString[old_string.size()];
+//                    ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
+//                    Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
+////                    arrayToSaveResultInto=resultsAsArrayFinal.clone();
+//                    if (resultsAsArrayFinal[j].getScore() > 8) {
+//                        System.out.println("\n" + resultsAsArrayFinal[j].getKey());
+//                        System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
+//                        System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
+//                    }
+////                Arrays.sort(resultsAsArrayFinal, resultsAsArrayFinal[0]);
+////                System.out.println("TOP 3 RESULTS\n");
+////                for (int e = resultsAsArrayFinal.length - 1; e > resultsAsArrayFinal.length - numberOfPrintResult - 1; e--) {
+////                    System.out.println("Key    " + resultsAsArrayFinal[e].getKey());
+////                    System.out.println("Score  " + resultsAsArrayFinal[e].getScore());
+////                    System.out.println("Decoded string:\n\n" + resultsAsArrayFinal[e].getDecodedString() + "\n");
+////                }
+//=======
             for (int j = 0; j < alphabetFileSize; j++) {
                 ArrayList<Character> tempChars = new ArrayList<>();
                 String decodedString = resultsAsArray[i].getDecodedString();
@@ -70,11 +69,11 @@ public class Q6 {
                 ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
                 Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
                 // TODO no hashcode
-                if (resultsAsArrayFinal[j].getScore() > 20) {
+                if (resultsAsArrayFinal[j].getScore() > 8) {
                     System.out.println("\n" + resultsAsArrayFinal[j].getKey());
                     System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
                     System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
->>>>>>> 2b46e1cc0dec9f53f05133a582e268eb8f3369b8
+//>>>>>>> 2b46e1cc0dec9f53f05133a582e268eb8f3369b8
                 }
             }
         }
