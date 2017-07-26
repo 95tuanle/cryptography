@@ -70,23 +70,6 @@ public class Q1 {
         resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
     }
 
-//    static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) throws IOException {
-////        TODOx better way to score? idk but I dont have time for it
-//        String[] words = decodedString.split(" ");
-//        int score = 0;
-//
-//        for (String word : words) {
-////            TODOx do analyze to determine value of 15
-//            if (word.length() < 12) {
-//                if (mostCommonWords.containsKey(word.toLowerCase())) {
-//                    score++;
-//                }
-//            }
-//        }
-//        return score;
-//
-//    }
-
     static double scoring(String decodedString, TreeMap<String, Double> mostCommonWords) throws IOException {
 //        TODOx better way to score? idk but I dont have time for it
         String[] words = decodedString.split("\\s+");
@@ -206,6 +189,46 @@ class DecodedString extends DecodedStringCore {
     @Override
     public String toString() {
         return "Key = " + key + "\n" + super.toString();
+    }
+}
+
+class DecodedStringCore implements Comparator<DecodedStringCore> {
+    private String decodedString;
+    //    private int key;
+    private double score;
+
+    //  TODOx any other classes?
+//    DecodedStringCore() {
+//        decodedString = "";
+////        key = 0;
+//        score = 0;
+//    }
+
+    DecodedStringCore(String decodedString, double score) {
+        this.decodedString = decodedString;
+//        this.key = key;
+        this.score = score;
+    }
+
+    String getDecodedString() {
+        return decodedString;
+    }
+
+    double getScore() {
+        return score;
+    }
+
+    @Override
+    public int compare(DecodedStringCore o1, DecodedStringCore o2) {
+        if (o1.score > o2.score) return 1;
+        else if (o1.score < o2.score) return -1;
+        else return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Score = " + score + "\n" +
+                "Decoded String = '" + decodedString + '\'' + "\n";
     }
 }
 
