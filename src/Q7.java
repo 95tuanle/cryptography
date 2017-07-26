@@ -15,51 +15,18 @@ public class Q7 {
 
 //        TODO what does it mean different keys + same key
         System.out.println("Check if the message is encoded using transposition first, then caesar (different keys + same key)");
-        decodeWithFirstCaesarAndThenTranspositionDifferentKeysAndSameKey();
+        decodeWithFirstCaesarAndThenTranspositionDifferentKeysAndSameKey("sourceFile/msg7.enc");
         System.out.println("\n\n");
 
         System.out.println("Check if the message is encoded using caesar first, then transposition (different keys + same key)");
-        decodeWithTranspositionFirstAndThenCaesarDifferentKeysAndSameKey();
+        Q6.decodeWithTranspositionFirstAndThenCaesarSameKey("sourceFile/msg7.enc");
     }
 
-    private static void decodeWithTranspositionFirstAndThenCaesarDifferentKeysAndSameKey() throws IOException {
-        ArrayList<Character> old_string = Q1.readFile("sourceFile/msg7.enc");
-        ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
-        ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
-        TreeMap<String, Integer> mostCommonWordsI = CommonWordAnalysis.process10000file();
-        TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(10000);
-        int alphabetFileSize = alphabetFile.size();
-        ArrayList<DecodedString> results = new ArrayList<>();
-        for (int i : commonDivisors) {
-            Q2.transpositionActualCrack(i, old_string, results, mostCommonWords);
-        }
-        DecodedString[] resultsAsArray = new DecodedString[results.size()];
-        results.toArray(resultsAsArray);
-        System.out.println("TOP RESULTS\n");
-        for (int i = 0; i < commonDivisors.size(); i++) {
-            for (int j = 0; j < alphabetFileSize; j++) {
-                ArrayList<Character> tempChars = new ArrayList<>();
-                String decodedString = resultsAsArray[i].getDecodedString();
-                for (char c : decodedString.toCharArray()) {
-                    tempChars.add(c);
-                }
-                DecodedString[] resultsAsArrayFinal = new DecodedString[old_string.size()];
-                ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
-                Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, resultsAsArrayFinal, j);
-                if (resultsAsArrayFinal[j].getScore() > 9) {
-                    System.out.println("\n" + resultsAsArrayFinal[j].getKey());
-                    System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
-                    System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
-                }
-            }
-        }
-    }
-
-    private static void decodeWithFirstCaesarAndThenTranspositionDifferentKeysAndSameKey() throws IOException {
+    private static void decodeWithFirstCaesarAndThenTranspositionDifferentKeysAndSameKey(String fileName) throws IOException {
 //        EXPLAIN: basic preparation
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         int alphabetFileSize = alphabetFile.size();
-        ArrayList<Character> cipherAL_C = Q1.readFile("sourceFile/msg7.enc");
+        ArrayList<Character> cipherAL_C = Q1.readFile(fileName);
         ArrayList<Integer> cipherAL_I = Q1.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
         DecodedString[] caesarCrackingResult = new DecodedString[alphabetFileSize];
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(cipherAL_C.size());

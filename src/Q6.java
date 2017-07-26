@@ -7,15 +7,15 @@ public class Q6 {
 
     public static void main(String[] args) {
         try {
-            decodeWithTranspositionFirstAndThenCaesarSameKey();
+            decodeWithTranspositionFirstAndThenCaesarSameKey("sourceFile/msg6.enc2");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void decodeWithTranspositionFirstAndThenCaesarSameKey() throws IOException {
+    static void decodeWithTranspositionFirstAndThenCaesarSameKey(String fileName) throws IOException {
 //        EXPLAIN: prepare basic variables
-        ArrayList<Character> old_string = Q1.readFile("sourceFile/msg6.enc2");
+        ArrayList<Character> old_string = Q1.readFile(fileName);
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
         TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(10000);
