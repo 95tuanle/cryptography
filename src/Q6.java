@@ -1,6 +1,5 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Q6 {
 
@@ -13,36 +12,56 @@ public class Q6 {
     }
 
     private static void decodeWithTranspositionFirstAndThenCaesarSameKey() throws IOException {
+//        EXPLAIN: prepare basic variables
         ArrayList<Character> old_string = Q1.readFile("sourceFile/msg6.enc2");
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
         TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(10000);
         int alphabetFileSize = alphabetFile.size();
-        ArrayList<DecodedString> results = new ArrayList<>();
+        ArrayList<DecodedString> transpositionCrackingResultAL = new ArrayList<>();
+
+//        EXPLAIN: crack using transposition
         for (int i : commonDivisors) {
-            Q2.actualCrack(i, old_string, results, mostCommonWords);
+            Q2.transpositionActualCrack(i, old_string, transpositionCrackingResultAL, mostCommonWords);
         }
-        DecodedString[] resultsAsArray = new DecodedString[results.size()];
-        results.toArray(resultsAsArray);
-        System.out.println("TOP 3 RESULTS\n");
+
+//        EXPLAIN: convert results from AL to A
+        DecodedString[] transpositionCrackingResultA = new DecodedString[transpositionCrackingResultAL.size()];
+        transpositionCrackingResultAL.toArray(transpositionCrackingResultA);
+
+
+        ArrayList<DecodedString> finalResultAL = new ArrayList<>();
+//        EXPLAIN: cracking using caesar
         for (int i = 0; i < commonDivisors.size(); i++) {
-            for (int j = 0; j < alphabetFileSize; j++) {
-                ArrayList<Character> tempChars = new ArrayList<>();
-                String decodedString = resultsAsArray[i].getDecodedString();
-                for (char c : decodedString.toCharArray()) {
-                    tempChars.add(c);
-                }
-                DecodedString[] resultsAsArrayFinal = new DecodedString[old_string.size()];
-                ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
-                Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
-                // TODO no hashcode, why do not 2 encrypting steps have the same key?
-                if (resultsAsArrayFinal[j].getScore() > 8) {
-//                if (j == resultsAsArray[i].getKey()) {
-                    System.out.println("\n" + resultsAsArrayFinal[j].getKey());
-                    System.out.println("Score  " + resultsAsArrayFinal[j].getScore());
-                    System.out.println("\n\n" + resultsAsArrayFinal[j].getDecodedString() + "\n");
-                }
+            ArrayList<Character> cipherAL_C = new ArrayList<>();
+            String decodedString = transpositionCrackingResultA[i].getDecodedString();
+//                EXPLAIN: convert ArrayList of Character to String
+            for (char c : decodedString.toCharArray()) {
+                cipherAL_C.add(c);
             }
+            ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
+            DecodedString[] caesarCrackingResultA = new DecodedString[alphabetFileSize];
+            for (int j = 0; j < alphabetFileSize; j++) {
+                Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, caesarCrackingResultA, j);
+            }
+            finalResultAL.addAll(Arrays.asList(caesarCrackingResultA));
+        }
+        finalResultAL.sort(new Comparator<DecodedString>() {
+            @Override
+            public int compare(DecodedString o1, DecodedString o2) {
+                if (o1.getScore() < o2.getScore()) return -1;
+                else if (o1.getScore() > o2.getScore()) return 1;
+                return 0;
+            }
+        });
+        System.out.println("TOP 3 RESULTS\n");
+        for (int i = 0; i < 3; i++) {
+            System.out.println("Result " +(i + 1));
+            DecodedString result = finalResultAL.get(i);
+            System.out.println("Key: " + result.getKey());
+            System.out.println("Score: " + result.getScore());
+            System.out.println("Decoded string: " + result.getDecodedString());
+            System.out.println();
         }
     }
 }

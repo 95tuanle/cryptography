@@ -27,7 +27,7 @@ public class Q7 {
         int alphabetFileSize = alphabetFile.size();
         ArrayList<DecodedString> results = new ArrayList<>();
         for (int i : commonDivisors) {
-            Q2.actualCrack(i, old_string, results, mostCommonWords);
+            Q2.transpositionActualCrack(i, old_string, results, mostCommonWords);
         }
         DecodedString[] resultsAsArray = new DecodedString[results.size()];
         results.toArray(resultsAsArray);
@@ -70,7 +70,7 @@ public class Q7 {
                     readingResult.add(tempString.charAt(j));
                 }
                 // TODO method actualCrack has been converted to method crackTransposition
-                Q2.actualCrack(x, readingResult, results, mostCommonWords);
+                Q2.transpositionActualCrack(x, readingResult, results, mostCommonWords);
             }
         }
         DecodedString[] resultsAsArrayX = new DecodedString[results.size()];
