@@ -68,16 +68,16 @@ public class Q4 {
         TreeMap<Character, Character> key = RandomSubstitution.getKeyFromFile("sourceFile/key for Q4.csv");
         DecodedString.DecodedStringRS decodedStringRS = RandomSubstitution.crack(cipherWordsA, key);
         printResult(cipherS, decodedStringRS);
-        writeResultToFile(decodedStringRS);
+        writeResultToFile(decodedStringRS, "sourceFile/Answer for Q4.txt");
     }
 
-    private static void writeResultToFile(DecodedString.DecodedStringRS decodedStringRS) throws IOException {
-        FileWriter fileWriter = new FileWriter("sourceFile/Answer for Q4.txt");
+    public static void writeResultToFile(DecodedString.DecodedStringRS decodedStringRS, String path) throws IOException {
+        FileWriter fileWriter = new FileWriter(path);
         fileWriter.write(decodedStringRS.getDecodedString());
         fileWriter.close();
     }
 
-    private static void printResult(String cipherS, DecodedString.DecodedStringRS decodedStringRS) {
+    public static void printResult(String cipherS, DecodedString.DecodedStringRS decodedStringRS) {
         cipherS = cipherS.replaceAll("\n", "\\n");
         System.out.println(cipherS);
         String decodedString = decodedStringRS.getDecodedString();
