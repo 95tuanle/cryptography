@@ -77,4 +77,37 @@ public class Q2 {
         String resultAsString = result.toString();
         results.add(new DecodedString(resultAsString, key, Q1.scoring(resultAsString, mostCommonWord)));
     }
+
+    static void crackTransposition(String path, int key) throws IllegalArgumentException, IOException {
+//        TODOx fix this one
+        ArrayList<Character> old_string = Q1.readFile(path);
+        ArrayList<Integer> commonDivisors = findCommonDivisors(old_string.size());
+//        TODOx fix cau so 2
+        if (key != -1 && !commonDivisors.contains(key)) {
+            throw new IllegalArgumentException("Invalid key value!");
+        }
+
+        ArrayList<DecodedString> results = new ArrayList<>();
+        TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(-1);
+
+        if (key == -1) {
+            for (int i : commonDivisors) {
+                actualCrack(i, old_string, results, mostCommonWords);
+            }
+
+//            TODO can it be more efficient
+            DecodedString[] resultsAsArray = new DecodedString[results.size()];
+            results.toArray(resultsAsArray);
+            Arrays.sort(resultsAsArray, resultsAsArray[0]);
+
+            System.out.println("TOP 3 RESULTS\n");
+            for (int i = 0; i < numberOfPrintResult; i++) {
+                System.out.println(resultsAsArray[i]);
+            }
+        } else {
+            actualCrack(key, old_string, results, mostCommonWords);
+            System.out.println("RESULT:\n");
+            System.out.println(results.get(0));
+        }
+    }
 }
