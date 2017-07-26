@@ -9,14 +9,6 @@ import java.util.TreeMap;
 public class Q1 {
     private static int numberOfPrintResult = 3;
 
-    public static void main(String[] args) {
-        try {
-            Q1.crackCaesar("sourceFile/msg1.enc", -1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     static void crackCaesar(String path, int key) throws IOException {
         ArrayList<Character> alphabetFile = processAlphabetFile();
         int alphabetFileSize = alphabetFile.size();
@@ -33,7 +25,7 @@ public class Q1 {
 
         if (key == -1) {
             for (int i = 0; i < alphabetFileSize; i++) {
-                crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
+                crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, resultsAsArray, i);
             }
             Arrays.sort(resultsAsArray, resultsAsArray[0]);
             System.out.println("TOP 3 RESULTS\n");
@@ -43,7 +35,7 @@ public class Q1 {
                 System.out.println("Decoded string:\n\n" + resultsAsArray[i].getDecodedString() + "\n");
             }
         } else {
-            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, key);
+            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, resultsAsArray, key);
             System.out.println("RESULT\n");
             System.out.println("Key    " + resultsAsArray[key].getKey());
             System.out.println("Score  " + resultsAsArray[key].getScore());
@@ -53,15 +45,8 @@ public class Q1 {
 
     }
 
-//    private static DecodedString[] coreCaesarCracking(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize) throws IOException {
-//        DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
-//        for (int i = 0; i < alphabetFile.size(); i++) {
-//            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
-//        }
-//        return resultsAsArray;
-//    }
-
-    private static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
+    static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, DecodedString[] resultsAsArray, int i) throws IOException {
+        int alphabetFileSize = alphabetFile.size();
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
             int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
@@ -116,14 +101,6 @@ public class Q1 {
         return stringAfterConvertedStringForm.toString();
     }
 
-//    private static char[] arrayObjectToCharArray(Object[] decodedStringAsArrayOfObject) {
-//        char[] returnResult = new char[decodedStringAsArrayOfObject.length];
-//        for (int i = 0; i < returnResult.length; i++) {
-//            returnResult[i] = (Character) decodedStringAsArrayOfObject[i];
-//        }
-//        return returnResult;
-//    }
-
     static ArrayList<Character> readFile(String fileName) throws IOException {
         FileReader in;
         in = new FileReader(fileName);
@@ -141,13 +118,6 @@ public class Q1 {
         in.close();
         return readingResult;
     }
-
-    //    TODOx can I not use ArrayList? can but the benefit does not justify the cost
-//    private static <E> void printArrayList(ArrayList<E> arrayList) {
-//        for (E anArrayList : arrayList) {
-//            System.out.print(anArrayList);
-//        }
-//    }
 
     static ArrayList<Character> processAlphabetFile() throws IOException {
         ArrayList<Character> in = readFile("sourceFile/alphabet.txt");
@@ -181,6 +151,7 @@ class DecodedString extends DecodedStringCore {
     DecodedString(String decodedString, double score, int key) {
         super(decodedString, score);
         this.key = key;
+
     }
 
     int getKey() {
@@ -192,6 +163,7 @@ class DecodedString extends DecodedStringCore {
         return "Key = " + key + "\n" + super.toString();
     }
 }
+
 
 class DecodedStringVernam extends DecodedStringCore {
     private ArrayList<Character> key;

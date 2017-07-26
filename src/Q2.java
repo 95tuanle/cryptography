@@ -24,7 +24,7 @@ public class Q2 {
         }
     }
 
-    private static ArrayList<Integer> findCommonDivisors(int size) {
+    public static ArrayList<Integer> findCommonDivisors(int size) {
         ArrayList<Integer> commonDivisors = new ArrayList<>();
         for (int i = 1; i < size / 2 + 1; i++) {
             if (size%i ==0) {
@@ -48,7 +48,7 @@ public class Q2 {
 
         if (key == -1) {
             for (int i : commonDivisors) {
-                actualCrack(i, old_string, results, mostCommonWords);
+                transpositionActualCrack(i, old_string, results, mostCommonWords);
             }
 
 //            TODO can it be more efficient
@@ -61,13 +61,13 @@ public class Q2 {
                 System.out.println(resultsAsArray[i]);
             }
         } else {
-            actualCrack(key, old_string, results, mostCommonWords);
+            transpositionActualCrack(key, old_string, results, mostCommonWords);
             System.out.println("RESULT:\n");
             System.out.println(results.get(0));
         }
     }
 
-    private static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Double> mostCommonWord) throws IOException {
+    static void transpositionActualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Double> mostCommonWord) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int k = 0; k < old_string.size() / key; k++) {
             for (int j = 0; j < key; j++) {
@@ -78,4 +78,17 @@ public class Q2 {
         String resultAsString = result.toString();
         results.add(new DecodedString(resultAsString, Q1.scoring(resultAsString, mostCommonWord), key));
     }
+
+//    static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Integer> mostCommonWord) throws IOException {
+//        StringBuilder result = new StringBuilder();
+//        for (int k = 0; k < old_string.size() / key; k++) {
+//            for (int j = 0; j < key; j++) {
+//                int index = old_string.size() / key * j + k;
+//                result.append(old_string.get(index));
+//            }
+//        }
+//        String resultAsString = result.toString();
+//        results.add(new DecodedString(resultAsString, key, Q1.scoring(resultAsString, mostCommonWord)));
+//    }
+
 }
