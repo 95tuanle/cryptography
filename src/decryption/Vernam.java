@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class Vernam {
-    public static DecodedStringVN crack(String pathToCipherText, String keyS) throws IOException {
+    public static DecodedString.DecodedStringVN crack(String pathToCipherText, String keyS) throws IOException {
         ArrayList<Character> alphabetFile = Decryption.processAlphabetFile();
         TreeMap<String, Double> mostCommonWords = Decryption.findMostCommonWords(-1);
 
@@ -25,6 +25,6 @@ public class Vernam {
         }
         String decodedString = Decryption.AL_I_toString(plainTextI, alphabetFile);
 
-        return new DecodedStringVN(decodedString, Decryption.scoring(decodedString, mostCommonWords), key);
+        return new DecodedString.DecodedStringVN(decodedString, Decryption.scoring(decodedString, mostCommonWords), key);
     }
 }

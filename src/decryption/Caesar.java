@@ -16,7 +16,7 @@ public class Caesar {
         ArrayList<Character> cipherAL_C = Decryption.readFile(path);
         ArrayList<Integer> cipherAL_I = Decryption.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
         TreeMap<String, Double> mostCommonWords = Decryption.findMostCommonWords(-1);
-        DecodedStringCT[] resultsA = new DecodedStringCT[alphabetFileSize];
+        DecodedString.DecodedStringCT[] resultsA = new DecodedString.DecodedStringCT[alphabetFileSize];
 
 //        TODOx re-implement process10000file
 //        EXPLAIN actual cracking
@@ -27,7 +27,7 @@ public class Caesar {
         }
     }
 
-    private static void crackCaesarWithSpecificKey(int key, ArrayList<Character> alphabetFile, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedStringCT[] resultsA) throws IOException {
+    private static void crackCaesarWithSpecificKey(int key, ArrayList<Character> alphabetFile, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsA) throws IOException {
         crackCaesarCore(alphabetFile, cipherAL_I, mostCommonWords, resultsA, key);
         System.out.println("RESULT\n");
         System.out.println("Key    " + resultsA[key].getKey());
@@ -35,7 +35,7 @@ public class Caesar {
         System.out.println("Decoded string:\n\n" + resultsA[key].getDecodedString() + "\n");
     }
 
-    private static void crackCaesarWithNoSpecificKey(ArrayList<Character> alphabetFile, int alphabetFileSize, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedStringCT[] resultsA) throws IOException {
+    private static void crackCaesarWithNoSpecificKey(ArrayList<Character> alphabetFile, int alphabetFileSize, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsA) throws IOException {
         for (int i = 0; i < alphabetFileSize; i++) {
             crackCaesarCore(alphabetFile, cipherAL_I, mostCommonWords, resultsA, i);
         }
@@ -43,7 +43,7 @@ public class Caesar {
         Decryption.printTopThreeResult(resultsA);
     }
 
-    static void crackCaesarCore(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, DecodedStringCT[] resultsAsArray, int i) throws IOException {
+    static void crackCaesarCore(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsAsArray, int i) throws IOException {
         int alphabetFileSize = alphabetFile.size();
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
@@ -51,6 +51,6 @@ public class Caesar {
             newString.add(newCharacter);
         }
         String decodedString = Decryption.AL_I_toString(newString, alphabetFile);
-        resultsAsArray[i] = new DecodedStringCT(decodedString, Decryption.scoring(decodedString, mostCommonWords), i);
+        resultsAsArray[i] = new DecodedString.DecodedStringCT(decodedString, Decryption.scoring(decodedString, mostCommonWords), i);
     }
 }

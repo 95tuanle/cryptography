@@ -89,14 +89,14 @@ public class Decryption {
         return stringAfterConverted;
     }
 
-    static DecodedStringCT[] convertResultFromAL_A(ArrayList<DecodedStringCT> results) {
-        DecodedStringCT[] finalResult = new DecodedStringCT[results.size()];
+    static DecodedString.DecodedStringCT[] convertResultFromAL_A(ArrayList<DecodedString.DecodedStringCT> results) {
+        DecodedString.DecodedStringCT[] finalResult = new DecodedString.DecodedStringCT[results.size()];
         results.toArray(finalResult);
         Arrays.sort(finalResult, finalResult[0]);
         return finalResult;
     }
 
-    public static void sortResult(ArrayList<DecodedStringVN> results) {
+    public static void sortResult(ArrayList<DecodedString.DecodedStringVN> results) {
         results.sort((o1, o2) -> {
             if (o1.getScore() > o2.getScore()) return 1;
             if (o1.getScore() < o2.getScore()) return -1;
@@ -104,11 +104,11 @@ public class Decryption {
         });
     }
 
-    static void printTopThreeResult(DecodedStringCT[] finalResult) {
+    static void printTopThreeResult(DecodedString.DecodedStringCT[] finalResult) {
         System.out.println("TOP 3 RESULTS\n");
         for (int i = 0; i < 3; i++) {
             System.out.println("Result " + (i + 1));
-            DecodedStringCT result = finalResult[i];
+            DecodedString.DecodedStringCT result = finalResult[i];
             System.out.println("Key: " + result.getKey());
             System.out.println("Score: " + result.getScore());
             System.out.println("Decoded string: " + result.getDecodedString());
@@ -116,12 +116,12 @@ public class Decryption {
         }
     }
 
-    public static void printTopThreeResult(ArrayList<DecodedStringVN> results) {
+    public static void printTopThreeResult(ArrayList<DecodedString.DecodedStringVN> results) {
         System.out.println("TOP 3 RESULTS:");
         System.out.println();
         for (int i = 0; i < 3; i++) {
             System.out.println("Result " + (i + 1));
-            DecodedStringVN result = results.get(i);
+            DecodedString.DecodedStringVN result = results.get(i);
             System.out.println("KEY: " + AL_C_toString(result.getKey()));
             System.out.println("SCORE: " + result.getScore());
             System.out.println("DECODED STRING: " + result.getDecodedString() + "\n");
@@ -129,7 +129,7 @@ public class Decryption {
         }
     }
 
-    public static TreeMap<String, Double> findMostCommonWords(int numberOfWords) {
+    static TreeMap<String, Double> findMostCommonWords(int numberOfWords) {
         if (numberOfWords < -1 || numberOfWords > 10000)
             throw new IllegalArgumentException("Number of words must be >= -1 and <= 70000!");
 
@@ -172,8 +172,8 @@ public class Decryption {
         return null;
     }
 
-    public static double getTotalCount(TreeMap<String, Double> mostCommonTriagrams, BufferedReader bufferedReader,
-                                       double total_count, int numberOfWords) throws IOException {
+    private static double getTotalCount(TreeMap<String, Double> mostCommonTriagrams, BufferedReader bufferedReader,
+                                        double total_count, int numberOfWords) throws IOException {
         String line;
         int numberOrReadLines = 0;
         while ((line = bufferedReader.readLine()) != null && numberOrReadLines <= numberOfWords) {
@@ -192,5 +192,52 @@ public class Decryption {
             result.add(keyS.charAt(i));
         }
         return result;
+    }
+
+    public static ArrayList<Character> getSubList(ArrayList<Character> list, int starting, int ending) {
+        ArrayList<Character> result = new ArrayList<>();
+        for (int i = starting; i < ending; i++) {
+            result.add(list.get(i));
+        }
+        return result;
+    }
+
+    static TreeMap<String, Double> processTriagramFile(int numberOfWords) {
+//        TODOx support limit number of words
+        if (numberOfWords < -1 || numberOfWords > 10000)
+            throw new IllegalArgumentException("Number of words must be >= -1 and <= 70000!");
+//        String line;
+        TreeMap<String, Double> mostCommonTriagrams = new TreeMap<>();
+
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader =
+                    new FileReader("sourceFile/english_trigrams.txt");
+
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader =
+                    new BufferedReader(fileReader);
+//            int pos = 0;
+            double total_count = 0;
+            int numberOrReadLines = 0;
+            total_count = getTotalCount(mostCommonTriagrams, bufferedReader, total_count, numberOfWords);
+            for (Map.Entry<String, Double> entry : mostCommonTriagrams.entrySet()) {
+                entry.setValue(Math.log(entry.getValue() / total_count));
+            }
+            bufferedReader.close();
+            return mostCommonTriagrams;
+
+        } catch (FileNotFoundException ex) {
+            System.out.println(
+                    "Unable to open file '" +
+                            "sourceFile/google-10000-english-no-swears.txt" + "'");
+        } catch (IOException ex) {
+            System.out.println(
+                    "Error reading file '"
+                            + "sourceFile/google-10000-english-no-swears.txt" + "'");
+            // Or we could just do this:
+            // ex.printStackTrace();
+        }
+        return null;
     }
 }

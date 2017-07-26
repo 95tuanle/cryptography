@@ -13,7 +13,7 @@ public class ComboEncryption {
         ArrayList<Integer> commonDivisors = Transposition.findCommonDivisors(old_string.size());
         TreeMap<String, Double> mostCommonWords = Decryption.findMostCommonWords(10000);
         int alphabetFileSize = alphabetFile.size();
-        ArrayList<DecodedStringCT> transpositionCrackingResultAL = new ArrayList<>();
+        ArrayList<DecodedString.DecodedStringCT> transpositionCrackingResultAL = new ArrayList<>();
 
 //        EXPLAIN: crack using transposition
         for (int i : commonDivisors) {
@@ -21,11 +21,11 @@ public class ComboEncryption {
         }
 
 //        EXPLAIN: convert results from AL to A
-        DecodedStringCT[] transpositionCrackingResultA = new DecodedStringCT[transpositionCrackingResultAL.size()];
+        DecodedString.DecodedStringCT[] transpositionCrackingResultA = new DecodedString.DecodedStringCT[transpositionCrackingResultAL.size()];
         transpositionCrackingResultAL.toArray(transpositionCrackingResultA);
 
 
-        ArrayList<DecodedStringCT> finalResultAL = new ArrayList<>();
+        ArrayList<DecodedString.DecodedStringCT> finalResultAL = new ArrayList<>();
 //        EXPLAIN: cracking using caesar
         for (int i = 0; i < commonDivisors.size(); i++) {
 //            EXPLAIN: Covert cipher text to Denis code
@@ -34,7 +34,7 @@ public class ComboEncryption {
             ArrayList<Integer> cipherAL_I = Decryption.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
 
 //            EXPLAIN: start cracking using Caesar
-            DecodedStringCT[] caesarCrackingResultA = new DecodedStringCT[alphabetFileSize];
+            DecodedString.DecodedStringCT[] caesarCrackingResultA = new DecodedString.DecodedStringCT[alphabetFileSize];
             for (int j = 0; j < alphabetFileSize; j++) {
                 Caesar.crackCaesarCore(alphabetFile, cipherAL_I, mostCommonWords, caesarCrackingResultA, j);
             }
@@ -52,7 +52,7 @@ public class ComboEncryption {
         System.out.println("TOP 3 RESULTS\n");
         for (int i = 0; i < 3; i++) {
             System.out.println("Result " + (i + 1));
-            DecodedStringCT result = finalResultAL.get(i);
+            DecodedString.DecodedStringCT result = finalResultAL.get(i);
             System.out.println("Key: " + result.getKey());
             System.out.println("Score: " + result.getScore());
             System.out.println("Decoded string: " + result.getDecodedString());
@@ -66,10 +66,10 @@ public class ComboEncryption {
         int alphabetFileSize = alphabetFile.size();
         ArrayList<Character> cipherAL_C = Decryption.readFile(fileName);
         ArrayList<Integer> cipherAL_I = Decryption.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
-        DecodedStringCT[] caesarCrackingResult = new DecodedStringCT[alphabetFileSize];
+        DecodedString.DecodedStringCT[] caesarCrackingResult = new DecodedString.DecodedStringCT[alphabetFileSize];
         ArrayList<Integer> commonDivisors = Transposition.findCommonDivisors(cipherAL_C.size());
         TreeMap<String, Double> mostCommonWords = Decryption.findMostCommonWords(10000);
-        ArrayList<DecodedStringCT> transpositionCrackingResult = new ArrayList<>();
+        ArrayList<DecodedString.DecodedStringCT> transpositionCrackingResult = new ArrayList<>();
 
 //        EXPLAIN: crack with Caesar first
         for (int i = 0; i < alphabetFile.size(); i++) {
@@ -82,7 +82,7 @@ public class ComboEncryption {
             }
         }
 
-        DecodedStringCT[] finalResult = Decryption.convertResultFromAL_A(transpositionCrackingResult);
+        DecodedString.DecodedStringCT[] finalResult = Decryption.convertResultFromAL_A(transpositionCrackingResult);
         Decryption.printTopThreeResult(finalResult);
     }
 }
