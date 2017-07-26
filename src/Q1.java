@@ -70,18 +70,37 @@ public class Q1 {
         resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
     }
 
-    static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) throws IOException {
+//    static int scoring(String decodedString, TreeMap<String, Integer> mostCommonWords) throws IOException {
+////        TODOx better way to score? idk but I dont have time for it
+//        String[] words = decodedString.split(" ");
+//        int score = 0;
+//
+//        for (String word : words) {
+////            TODOx do analyze to determine value of 15
+//            if (word.length() < 12) {
+//                if (mostCommonWords.containsKey(word.toLowerCase())) {
+//                    score++;
+//                }
+//            }
+//        }
+//        return score;
+//
+//    }
+
+    static double scoring(String decodedString, TreeMap<String, Double> mostCommonWords) throws IOException {
 //        TODOx better way to score? idk but I dont have time for it
-        String[] words = decodedString.split(" ");
-        int score = 0;
+        String[] words = decodedString.split("\\s+");
+        double score = 0;
 
         for (String word : words) {
 //            TODOx do analyze to determine value of 15
             if (word.length() < 12) {
-                if (mostCommonWords.containsKey(word.toLowerCase())) {
-                    score++;
+                if (mostCommonWords.containsKey(word)) {
+//                    TODOx this may result error
+                    score += mostCommonWords.get(word);
                 }
             }
+
         }
         return score;
 
