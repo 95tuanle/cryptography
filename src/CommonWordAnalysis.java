@@ -10,8 +10,8 @@ class CommonWordAnalysis {
         return calculateCommonWordSize(mostCommonWords, frequency);
     }
 
-    private static TreeMap<String, Integer> saveMostCommonWordToFIle() throws IOException {
-        TreeMap<String, Integer> mostCommonWords = process10000file();
+    private static TreeMap<String, Double> saveMostCommonWordToFIle() throws IOException {
+        TreeMap<String, Double> mostCommonWords = process10000file(-1);
         FileOutputStream fos = new FileOutputStream("sourceFile/mostCommonWords.o");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(mostCommonWords);
@@ -46,7 +46,7 @@ class CommonWordAnalysis {
         PrintWriter outputStream = null;
 
         try {
-            outputStream = new PrintWriter(new FileWriter("Frequency analysis.csv"));
+            outputStream = new PrintWriter(new FileWriter("Word length analysis.csv"));
             outputStream.println("Length\tFrequency");
             for (int i = 0; i < frequency.length; i++) {
                 outputStream.print(i);
@@ -60,28 +60,90 @@ class CommonWordAnalysis {
         }
     }
 
-    static TreeMap<String, Integer> process10000file() {
-        String line;
-        TreeMap<String, Integer> mostCommonWords = new TreeMap<>();
+    static TreeMap<String, Double> process10000file(int numberOfWords) {
+        if (numberOfWords < -1 || numberOfWords > 10000)
+            throw new IllegalArgumentException("Number of words must be >= -1 and <= 70000!");
+//        String line;
+        TreeMap<String, Double> mostCommonWords = new TreeMap<>();
+
         try {
             // FileReader reads text files in the default encoding.
             FileReader fileReader =
-                    new FileReader("sourceFile/google-10000-english-no-swears.txt");
+                    new FileReader("sourceFile/english_words.txt");
 
             // Always wrap FileReader in BufferedReader.
             BufferedReader bufferedReader =
                     new BufferedReader(fileReader);
-            int pos = 0;
-            while ((line = bufferedReader.readLine()) != null) {
-//                returnResult = returnResult.concat(line + "\n");
-                mostCommonWords.put(line, pos);
+//            int pos = 0;
+            double total_count = 0;
+            total_count = getTotalCount(mostCommonWords, bufferedReader, total_count, numberOfWords);
+            for (Map.Entry<String, Double> entry : mostCommonWords.entrySet()) {
+                entry.setValue(Math.log(entry.getValue() / total_count));
             }
+//            TODO support case where number of words is specified
+//            if (numberOfWords != -1) {
+//                Set<Map.Entry<String, Double>> entries = mostCommonWords.entrySet();
+//
+////                Arrays.sort(mostCommonWordsAsArray, new Comparator<Object>() {
+////                    @Override
+////                    public int compare(Object o1, Object o2) {
+////                        if(((Map.Entry<String, Double>) o1).getValue() > ((Map.Entry<String, Double>) o2).getValue()) return 1;
+////                        else if(((Map.Entry<String, Double>) o1).getValue() < ((Map.Entry<String, Double>) o2).getValue()) return -1;
+////                        return 0;
+//////                        if(o1 instanceof Map.Entry && o2 instanceof Map.Entry){
+//////                            if(((Map.Entry) o1).getKey() instanceof String && ((Map.Entry) o2).getKey()
+//////                                    instanceof String && ((Map.Entry) o1).getValue() instanceof Double &&
+//////                                    ((Map.Entry) o2).getValue() instanceof Double){
+//////
+//////                            }
+//////                        }
+////                    }
+////                });
+//            }
 
             // Always close files.
             bufferedReader.close();
-
-
             return mostCommonWords;
+
+        } catch (FileNotFoundException ex) {
+            System.out.println(
+                    "Unable to open file '" +
+                            "sourceFile/google-10000-english-no-swears.txt" + "'");
+        } catch (IOException ex) {
+            System.out.println(
+                    "Error reading file '"
+                            + "sourceFile/google-10000-english-no-swears.txt" + "'");
+            // Or we could just do this:
+            // ex.printStackTrace();
+        }
+        return null;
+    }
+
+    static TreeMap<String, Double> processTriagramFile(int numberOfWords) {
+//        TODO support limit number of words
+        if (numberOfWords < -1 || numberOfWords > 10000)
+            throw new IllegalArgumentException("Number of words must be >= -1 and <= 70000!");
+//        String line;
+        TreeMap<String, Double> mostCommonTriagrams = new TreeMap<>();
+
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader =
+                    new FileReader("sourceFile/english_trigrams.txt");
+
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader =
+                    new BufferedReader(fileReader);
+//            int pos = 0;
+            double total_count = 0;
+            int numberOrReadLines = 0;
+            total_count = getTotalCount(mostCommonTriagrams, bufferedReader, total_count, numberOfWords);
+            for (Map.Entry<String, Double> entry : mostCommonTriagrams.entrySet()) {
+                entry.setValue(Math.log(entry.getValue() / total_count));
+            }
+            bufferedReader.close();
+            return mostCommonTriagrams;
+
         } catch (FileNotFoundException ex) {
             System.out.println(
                     "Unable to open file '" +
@@ -110,41 +172,30 @@ class CommonWordAnalysis {
         return total_count;
     }
 
-    static TreeMap<String, Double> process10000file(int numberOfWords) {
-        if (numberOfWords < -1 || numberOfWords > 10000)
-            throw new IllegalArgumentException("Number of words must be >= -1 and <= 70000!");
-//        String line;
-        TreeMap<String, Double> mostCommonWords = new TreeMap<>();
+    static TreeMap<String, Double> processDoubleFile() {
+        return null;
+    }
 
-        try {
-            // FileReader reads text files in the default encoding.
-            FileReader fileReader =
-                    new FileReader("sourceFile/english_words.txt");
+    static TreeMap<String, Double> processInitialLetterFile() {
+        return null;
+    }
 
-            // Always wrap FileReader in BufferedReader.
-            BufferedReader bufferedReader =
-                    new BufferedReader(fileReader);
-//            int pos = 0;
-            double total_count = 0;
-            total_count = getTotalCount(mostCommonWords, bufferedReader, total_count, numberOfWords);
-            for (Map.Entry<String, Double> entry : mostCommonWords.entrySet()) {
-                entry.setValue(Math.log(entry.getValue() / total_count));
-            }
-            // Always close files.
-            bufferedReader.close();
-            return mostCommonWords;
+    static TreeMap<String, Double> processOneLetterWordFile() {
+        TreeMap<String, Double> oneLetterWord = new TreeMap<>();
+        oneLetterWord.put("A", 0.0);
+        oneLetterWord.put("I", 0.0);
+        return oneLetterWord;
+    }
 
-        } catch (FileNotFoundException ex) {
-            System.out.println(
-                    "Unable to open file '" +
-                            "sourceFile/google-10000-english-no-swears.txt" + "'");
-        } catch (IOException ex) {
-            System.out.println(
-                    "Error reading file '"
-                            + "sourceFile/google-10000-english-no-swears.txt" + "'");
-            // Or we could just do this:
-            // ex.printStackTrace();
-        }
+    static TreeMap<String, Double> processTwoLetterWordFile() {
+        return null;
+    }
+
+    static TreeMap<String, Double> processThreeLetterWordFile() {
+        return null;
+    }
+
+    static TreeMap<String, Double> processFourLetterWordFile() {
         return null;
     }
 }

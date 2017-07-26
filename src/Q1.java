@@ -75,7 +75,7 @@ public class Q1 {
 
     }
 
-    private static String decodeString(ArrayList<Integer> originalStringInDenisCode, ArrayList<Character> alphabetFile) {
+    static String decodeString(ArrayList<Integer> originalStringInDenisCode, ArrayList<Character> alphabetFile) {
         /*
         * 1. Convert orinial to DenisCode
         * 2. Plus 1
@@ -92,7 +92,7 @@ public class Q1 {
         StringBuilder stringAfterConvertedStringForm = new StringBuilder();
 
         for (Integer anOriginalCharacter : originalStringInDenisCode) {
-//            Character correspondingValue = denisCode.get(anOriginalCharacter);
+            //            Character correspondingValue = denisCode.get(anOriginalCharacter);
 //            stringAfterConverted.add(correspondingValue);
             stringAfterConvertedStringForm.append(alphabetFile.get(anOriginalCharacter));
         }
@@ -151,6 +151,7 @@ class DecodedString extends DecodedStringCore {
     DecodedString(String decodedString, double score, int key) {
         super(decodedString, score);
         this.key = key;
+
     }
 
     int getKey() {
@@ -162,6 +163,69 @@ class DecodedString extends DecodedStringCore {
         return "Key = " + key + "\n" + super.toString();
     }
 }
+
+
+class DecodedStringVernam extends DecodedStringCore {
+    private ArrayList<Character> key;
+
+    DecodedStringVernam(String decodedString, double score, ArrayList<Character> key) {
+        super(decodedString, score);
+        this.key = key;
+    }
+
+    ArrayList<Character> getKey() {
+        return key;
+    }
+
+    public String toString() {
+        return "Key = " + key + "\n" + super.toString();
+    }
+
+}
+//class DecodedString implements Comparator<DecodedString> {
+//    private String decodedString;
+//    private int key;
+//    private int score;
+//
+//    //  TODOx any other classes?
+//    DecodedString() {
+//        decodedString = "";
+//        key = 0;
+//        score = 0;
+//    }
+//
+//    DecodedString(String decodedString, int key, int score) {
+//        this.decodedString = decodedString;
+//        this.key = key;
+//        this.score = score;
+//    }
+//
+//    String getDecodedString() {
+//        return decodedString;
+//    }
+//
+//    int getKey() {
+//        return key;
+//    }
+//
+//    int getScore() {
+//        return score;
+//    }
+//
+//    @Override
+//    public int compare(DecodedString o1, DecodedString o2) {
+//        if (o1.score > o2.score) return 1;
+//        else if (o1.score < o2.score) return -1;
+//        else return 0;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "Key = " + key + "\n" +
+//                "Score = " + score + "\n" +
+//                "Decoded String = '" + decodedString + '\'' + "\n";
+//    }
+//}
 
 class DecodedStringCore implements Comparator<DecodedStringCore> {
     private String decodedString;
