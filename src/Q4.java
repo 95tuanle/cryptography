@@ -1,3 +1,6 @@
+import decryption.DecodedStringRS;
+import decryption.Decryption;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,9 +45,9 @@ public class Q4 {
     private static final int englishMonogram = 5;
 
     public static void main(String[] args) throws Exception {
-        ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
+        ArrayList<Character> alphabetFile = Decryption.processAlphabetFile();
 //        TODOx design an algorithm to automate the process > shouldn't do it
-        ArrayList<Character> old_string = Q1.readFile("sourceFile/msg4.enc");
+        ArrayList<Character> old_string = Decryption.readFile("sourceFile/msg4.enc");
 
         ArrayList<CharacterFrequency> mostCommonMonogram = processEnglishMonogram();
         TreeMap<String, Double> mostCommonTrigram = CommonWordAnalysis.processTriagramFile(-1);
@@ -67,7 +70,7 @@ public class Q4 {
         * I am assuming that sample of size SAMPLE_ENDING is good enough!*/
         ArrayList<Character> sampleList = getSubList(old_string, 0, SAMPLE_ENDING);
 //        TODOx analyze based on words
-        String sampleString = getStringRepresentation(sampleList);
+        String sampleString = Decryption.AL_C_toString(sampleList);
         String[] sampleWordsList = sampleString.split(Character.toString(spaceAnalyses.get(0).getSpace()));
 
         ArrayList<CharacterFrequency> letterUseInSample = getLetterUseInSample(sampleList, cipherFreqTable);
@@ -77,18 +80,18 @@ public class Q4 {
 
         preparePossibleCharacter(cipherFreqTable, mostCommonMonogram, spaceAnalyses, oneLetterWordFromCipher, mostCommonOneLetterWord);
 
-        HashSet<DecodedStringOfRandomSub> results = new HashSet<>();
+        HashSet<DecodedStringRS> results = new HashSet<>();
         TreeMap<Character, Character> key = new TreeMap<>();
 
         getKeyFromFile(key);
         key.put('$', '\'');
-        DecodedStringOfRandomSub decodedStringOfRandomSub = crackRandomSubstitution(key, mostCommonTrigram, sampleWordsList);
+        DecodedStringRS decodedStringRS = crackRandomSubstitution(key, mostCommonTrigram, sampleWordsList);
 
         sampleString = sampleString.replaceAll("\n", "\\n");
         System.out.println(sampleString);
-        System.out.println(decodedStringOfRandomSub.getDecodedString());
+        System.out.println(decodedStringRS.getDecodedString());
         FileWriter fileWriter = new FileWriter("sourceFile/Answer for Q4.txt");
-        fileWriter.write(decodedStringOfRandomSub.getDecodedString());
+        fileWriter.write(decodedStringRS.getDecodedString());
         fileWriter.close();
         System.out.println();
 //        noName(letterUseInSample, key, 0, mostCommonTrigram, sampleList, results, sampleWordsList);
@@ -209,7 +212,7 @@ public class Q4 {
                     }
                 }
             }
-            String newStringS = getStringRepresentation(newStringL);
+            String newStringS = Decryption.AL_C_toString(newStringL);
             String[] words = newStringS.split(" ");
 
 //            EXPLAIN identify max word length
@@ -250,9 +253,9 @@ public class Q4 {
     }
 
     private static void noName(ArrayList<CharacterFrequency> cipherFreqTable, TreeMap<Character, Character> key,
-                               int index, TreeMap<String, Double> mostCommonTriagram, HashSet<DecodedStringOfRandomSub> results, String[] sampleWordsList) throws IOException {
+                               int index, TreeMap<String, Double> mostCommonTriagram, HashSet<DecodedStringRS> results, String[] sampleWordsList) throws IOException {
         if (index == cipherFreqTable.size()) {
-            DecodedStringOfRandomSub decodedString = crackRandomSubstitution(key, mostCommonTriagram, sampleWordsList);
+            DecodedStringRS decodedString = crackRandomSubstitution(key, mostCommonTriagram, sampleWordsList);
             if (decodedString.getScore() < THRESHOLD)
                 results.add(decodedString);
 //            if (key.values().contains(' ')) {
@@ -346,7 +349,7 @@ public class Q4 {
         return -1;
     }
 
-    private static DecodedStringOfRandomSub crackRandomSubstitution(TreeMap<Character, Character> key, TreeMap<String, Double> mostCommonTriagram, String[] sampleWordsList) throws IOException {
+    private static DecodedStringRS crackRandomSubstitution(TreeMap<Character, Character> key, TreeMap<String, Double> mostCommonTriagram, String[] sampleWordsList) throws IOException {
 //        String[] plaintextWordList = new String[sampleWordsList.length];
         StringBuilder plainTextWordListSB = new StringBuilder();
         for (String sampleWord : sampleWordsList) {
@@ -369,14 +372,14 @@ public class Q4 {
 //        TODOx need to check latter
 //        String decodedString = getStringRepresentation(newString);
 //        String decodedString = newString.stream().map(e->e.toString()).collect(Collectors.joining());
-        DecodedStringOfRandomSub decodedStringOfRandomSub = new DecodedStringOfRandomSub(decodedString, key, scoringUsingTrigram(decodedString, mostCommonTriagram));
-        if (decodedStringOfRandomSub.getScore() < THRESHOLD) {
+        DecodedStringRS decodedStringRS = new DecodedStringRS(decodedString, key, scoringUsingTrigram(decodedString, mostCommonTriagram));
+        if (decodedStringRS.getScore() < THRESHOLD) {
 //            System.out.println("RESULT\n");
-            System.out.println("Key    " + decodedStringOfRandomSub.getKey());
-            System.out.println("Score  " + decodedStringOfRandomSub.getScore());
-            System.out.println("Decoded string: " + decodedStringOfRandomSub.getDecodedString() + "\n");
+            System.out.println("Key    " + decodedStringRS.getKey());
+            System.out.println("Score  " + decodedStringRS.getScore());
+            System.out.println("Decoded string: " + decodedStringRS.getDecodedString() + "\n");
         }
-        return decodedStringOfRandomSub;
+        return decodedStringRS;
     }
 
     private static double scoringUsingTrigram(String decodedString, TreeMap<String, Double> mostCommonTrigram) {
@@ -395,14 +398,6 @@ public class Q4 {
             }
         }
         return score;
-    }
-
-    static String getStringRepresentation(ArrayList<Character> list) {
-        StringBuilder builder = new StringBuilder(list.size());
-        for (Character ch : list) {
-            builder.append(ch);
-        }
-        return builder.toString();
     }
 
     private static ArrayList<CharacterFrequency> processEnglishMonogram() throws IOException {
@@ -425,7 +420,7 @@ public class Q4 {
     private static ArrayList<CharacterFrequency> createFrequencyTable(ArrayList<Character> alphabetFile, ArrayList<Character> old_string) throws IOException {
 //        ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
 //        String cipherText = getCipherText();
-        String cipherText = getStringRepresentation(old_string);
+        String cipherText = Decryption.AL_C_toString(old_string);
 //        int alphabetFileSize = alphabetFile.size();
         int frequency;
 //        int[] charFreq = new int[alphabetFileSize];
@@ -487,18 +482,6 @@ public class Q4 {
         }
     }
 
-//    private static String getCipherText() throws IOException {
-//        ArrayList<Character> alphabetFile = Q1.readFile("sourceFile/msg3.enc");
-//        StringBuilder alphabetFileAsString = new StringBuilder();
-//        for (Character anAlphabetFile : alphabetFile) {
-//            alphabetFileAsString.append(anAlphabetFile);
-//        }
-////        Character[] alphabetFileAsCharacterArray = new Character[alphabetFile.size()];
-////        alphabetFile.toArray(alphabetFileAsCharacterArray);
-////        alphabetFileAsString.replace(39, 41, "\n");
-//        return alphabetFileAsString.toString();
-//    }
-
     static class CharacterFrequency implements Comparator<CharacterFrequency> {
         char character;
         int frequency;
@@ -539,20 +522,3 @@ public class Q4 {
     }
 }
 
-class DecodedStringOfRandomSub extends DecodedStringCore {
-    private TreeMap<Character, Character> key;
-
-    DecodedStringOfRandomSub(String decodedString, TreeMap<Character, Character> key, double score) {
-        super(decodedString, score);
-        this.key = key;
-    }
-
-    TreeMap<Character, Character> getKey() {
-        return key;
-    }
-
-    @Override
-    public String toString() {
-        return "Key = " + key + "\n" + super.toString();
-    }
-}
