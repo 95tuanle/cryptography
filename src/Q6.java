@@ -38,12 +38,12 @@ public class Q6 {
 //            EXPLAIN: Covert cipher text to Denis code
             String decodedString = transpositionCrackingResultA[i].getDecodedString();
             ArrayList<Character> cipherAL_C = stringToArrayListOfCharacter(decodedString);
-            ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
+            ArrayList<Integer> cipherAL_I = Q1.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
 
 //            EXPLAIN: start cracking using Caesar
             DecodedString[] caesarCrackingResultA = new DecodedString[alphabetFileSize];
             for (int j = 0; j < alphabetFileSize; j++) {
-                Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, caesarCrackingResultA, j);
+                Q1.crackCaesarWithSpecificKey(alphabetFile, cipherAL_I, mostCommonWords, caesarCrackingResultA, j);
             }
             finalResultAL.addAll(Arrays.asList(caesarCrackingResultA));
         }
@@ -67,7 +67,7 @@ public class Q6 {
         }
     }
 
-    private static ArrayList<Character> stringToArrayListOfCharacter(String string) {
+    static ArrayList<Character> stringToArrayListOfCharacter(String string) {
         ArrayList<Character> cipherAL_C = new ArrayList<>();
         for (char c : string.toCharArray()) {
             cipherAL_C.add(c);

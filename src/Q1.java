@@ -25,7 +25,7 @@ public class Q1 {
 
         if (key == -1) {
             for (int i = 0; i < alphabetFileSize; i++) {
-                crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
+                crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, resultsAsArray, i);
             }
             Arrays.sort(resultsAsArray, resultsAsArray[0]);
             System.out.println("TOP 3 RESULTS\n");
@@ -35,7 +35,7 @@ public class Q1 {
                 System.out.println("Decoded string:\n\n" + resultsAsArray[i].getDecodedString() + "\n");
             }
         } else {
-            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, key);
+            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, resultsAsArray, key);
             System.out.println("RESULT\n");
             System.out.println("Key    " + resultsAsArray[key].getKey());
             System.out.println("Score  " + resultsAsArray[key].getScore());
@@ -45,7 +45,8 @@ public class Q1 {
 
     }
 
-    static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
+    static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, DecodedString[] resultsAsArray, int i) throws IOException {
+        int alphabetFileSize = alphabetFile.size();
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
             int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
@@ -128,7 +129,7 @@ public class Q1 {
         return in;
     }
 
-    public static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
+    static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
 //        TODOx if have time think of a more efficient algorithm
 //        HashMap<Character, Integer> denisCode = new HashMap<>();
 //        for (int i = 0; i < alphabetFile.size(); i++) {
