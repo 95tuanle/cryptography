@@ -60,14 +60,14 @@ public class Q1 {
         return resultsAsArray;
     }
 
-    public static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Integer> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
+    private static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
             int newCharacter = ((elementInConvertedString + i) % alphabetFileSize);
             newString.add(newCharacter);
         }
         String decodedString = decodeString(newString, alphabetFile);
-        resultsAsArray[i] = new DecodedString(decodedString, i, scoring(decodedString, mostCommonWords));
+        resultsAsArray[i] = new DecodedString(decodedString, scoring(decodedString, mostCommonWords), i);
     }
 
     static double scoring(String decodedString, TreeMap<String, Double> mostCommonWords) throws IOException {
