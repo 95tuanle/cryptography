@@ -1,5 +1,7 @@
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeMap;
 
 public class Q6 {
 
@@ -33,27 +35,27 @@ public class Q6 {
         ArrayList<DecodedString> finalResultAL = new ArrayList<>();
 //        EXPLAIN: cracking using caesar
         for (int i = 0; i < commonDivisors.size(); i++) {
-            ArrayList<Character> cipherAL_C = new ArrayList<>();
+//            EXPLAIN: Covert cipher text to Denis code
             String decodedString = transpositionCrackingResultA[i].getDecodedString();
-//                EXPLAIN: convert ArrayList of Character to String
-            for (char c : decodedString.toCharArray()) {
-                cipherAL_C.add(c);
-            }
+            ArrayList<Character> cipherAL_C = stringToArrayListOfCharacter(decodedString);
             ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(cipherAL_C, alphabetFile);
+
+//            EXPLAIN: start cracking using Caesar
             DecodedString[] caesarCrackingResultA = new DecodedString[alphabetFileSize];
             for (int j = 0; j < alphabetFileSize; j++) {
                 Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, caesarCrackingResultA, j);
             }
             finalResultAL.addAll(Arrays.asList(caesarCrackingResultA));
         }
-        finalResultAL.sort(new Comparator<DecodedString>() {
-            @Override
-            public int compare(DecodedString o1, DecodedString o2) {
-                if (o1.getScore() < o2.getScore()) return -1;
-                else if (o1.getScore() > o2.getScore()) return 1;
-                return 0;
-            }
+
+//        EXPLAIN: look for the ones with highest score
+        finalResultAL.sort((o1, o2) -> {
+            if (o1.getScore() < o2.getScore()) return -1;
+            else if (o1.getScore() > o2.getScore()) return 1;
+            return 0;
         });
+
+//        EXPLAIN: print top 3 results
         System.out.println("TOP 3 RESULTS\n");
         for (int i = 0; i < 3; i++) {
             System.out.println("Result " +(i + 1));
@@ -63,5 +65,13 @@ public class Q6 {
             System.out.println("Decoded string: " + result.getDecodedString());
             System.out.println();
         }
+    }
+
+    private static ArrayList<Character> stringToArrayListOfCharacter(String string) {
+        ArrayList<Character> cipherAL_C = new ArrayList<>();
+        for (char c : string.toCharArray()) {
+            cipherAL_C.add(c);
+        }
+        return cipherAL_C;
     }
 }
