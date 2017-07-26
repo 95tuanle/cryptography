@@ -16,7 +16,6 @@ public class Q6 {
         ArrayList<Character> old_string = Q1.readFile("sourceFile/msg6.enc2");
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
-        TreeMap<String, Integer> mostCommonWordsI = CommonWordAnalysis.process10000file();
         TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(10000);
         int alphabetFileSize = alphabetFile.size();
         ArrayList<DecodedString> results = new ArrayList<>();

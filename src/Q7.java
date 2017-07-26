@@ -22,7 +22,8 @@ public class Q7 {
         ArrayList<Character> old_string = Q1.readFile("sourceFile/msg7.enc");
         ArrayList<Character> alphabetFile = Q1.processAlphabetFile();
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
-        TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
+        TreeMap<String, Integer> mostCommonWordsI = CommonWordAnalysis.process10000file();
+        TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(10000);
         int alphabetFileSize = alphabetFile.size();
         ArrayList<DecodedString> results = new ArrayList<>();
         for (int i : commonDivisors) {
@@ -57,7 +58,8 @@ public class Q7 {
         ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(old_string, alphabetFile);
         DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
         ArrayList<Integer> commonDivisors = Q2.findCommonDivisors(old_string.size());
-        TreeMap<String, Integer> mostCommonWords = CommonWordAnalysis.process10000file();
+        TreeMap<String, Integer> mostCommonWordsI = CommonWordAnalysis.process10000file();
+        TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(10000);
         ArrayList<DecodedString> results = new ArrayList<>();
         for (int i = 0; i < alphabetFile.size(); i++) {
             Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);

@@ -9,6 +9,42 @@ import java.util.TreeMap;
 public class Q1 {
     private static int numberOfPrintResult = 3;
 
+    static void crackCaesar(String path, int key) throws IOException {
+        ArrayList<Character> alphabetFile = processAlphabetFile();
+        int alphabetFileSize = alphabetFile.size();
+
+        if (key < -1 || key >= alphabetFileSize) {
+            throw new IllegalArgumentException("Invalid Key");
+        }
+
+        ArrayList<Character> old_string = readFile(path);
+        ArrayList<Integer> convertedString = convertFromASCIIToDenisCode(old_string, alphabetFile);
+//        TODOx reimplement process10000file
+        TreeMap<String, Double> mostCommonWords = CommonWordAnalysis.process10000file(-1);
+        DecodedString[] resultsAsArray = new DecodedString[alphabetFileSize];
+
+        if (key == -1) {
+            for (int i = 0; i < alphabetFileSize; i++) {
+                crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, i);
+            }
+            Arrays.sort(resultsAsArray, resultsAsArray[0]);
+            System.out.println("TOP 3 RESULTS\n");
+            for (int i = 0; i < numberOfPrintResult; i++) {
+                System.out.println("Key    " + resultsAsArray[i].getKey());
+                System.out.println("Score  " + resultsAsArray[i].getScore());
+                System.out.println("Decoded string:\n\n" + resultsAsArray[i].getDecodedString() + "\n");
+            }
+        } else {
+            crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArray, key);
+            System.out.println("RESULT\n");
+            System.out.println("Key    " + resultsAsArray[key].getKey());
+            System.out.println("Score  " + resultsAsArray[key].getScore());
+            System.out.println("Decoded string:\n\n" + resultsAsArray[key].getDecodedString() + "\n");
+        }
+        System.out.println();
+
+    }
+
     static void crackCaesarWithSpecificKey(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, int alphabetFileSize, DecodedString[] resultsAsArray, int i) throws IOException {
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
