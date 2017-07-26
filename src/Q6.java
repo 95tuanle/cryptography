@@ -21,7 +21,7 @@ public class Q6 {
         int alphabetFileSize = alphabetFile.size();
         ArrayList<DecodedString> results = new ArrayList<>();
         for (int i : commonDivisors) {
-            Q2.actualCrack(i, old_string, results, mostCommonWordsI);
+            Q2.actualCrack(i, old_string, results, mostCommonWords);
         }
         DecodedString[] resultsAsArray = new DecodedString[results.size()];
         results.toArray(resultsAsArray);
@@ -35,7 +35,7 @@ public class Q6 {
                 }
                 DecodedString[] resultsAsArrayFinal = new DecodedString[old_string.size()];
                 ArrayList<Integer> convertedString = Q1.convertFromASCIIToDenisCode(tempChars, alphabetFile);
-                Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWordsI, alphabetFileSize, resultsAsArrayFinal, j);
+                Q1.crackCaesarWithSpecificKey(alphabetFile, convertedString, mostCommonWords, alphabetFileSize, resultsAsArrayFinal, j);
                 // TODO no hashcode, why do not 2 encrypting steps have the same key?
                 if (resultsAsArrayFinal[j].getScore() > 8) {
 //                if (j == resultsAsArray[i].getKey()) {

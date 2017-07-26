@@ -67,7 +67,7 @@ public class Q2 {
         }
     }
 
-    private static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Double> mostCommonWord) throws IOException {
+    static void actualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString> results, TreeMap<String, Double> mostCommonWord) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int k = 0; k < old_string.size() / key; k++) {
             for (int j = 0; j < key; j++) {
