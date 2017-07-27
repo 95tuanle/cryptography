@@ -207,6 +207,7 @@ public class Decryption {
         if (numberOfWords < -1 || numberOfWords > 10000)
             throw new IllegalArgumentException("Number of words must be >= -1 and <= 70000!");
 //        String line;
+        if(numberOfWords == -1) numberOfWords = 10000;
         TreeMap<String, Double> mostCommonTriagrams = new TreeMap<>();
 
         try {

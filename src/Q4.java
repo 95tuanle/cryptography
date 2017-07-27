@@ -67,22 +67,8 @@ public class Q4 {
 
         TreeMap<Character, Character> key = RandomSubstitution.getKeyFromFile("sourceFile/key for Q4.csv");
         DecodedString.DecodedStringRS decodedStringRS = RandomSubstitution.crack(cipherWordsA, key);
-        printResult(cipherS, decodedStringRS);
-        writeResultToFile(decodedStringRS, "sourceFile/Answer for Q4.txt");
-    }
-
-    public static void writeResultToFile(DecodedString.DecodedStringRS decodedStringRS, String path) throws IOException {
-        FileWriter fileWriter = new FileWriter(path);
-        fileWriter.write(decodedStringRS.getDecodedString());
-        fileWriter.close();
-    }
-
-    public static void printResult(String cipherS, DecodedString.DecodedStringRS decodedStringRS) {
-        cipherS = cipherS.replaceAll("\n", "\\n");
-        System.out.println(cipherS);
-        String decodedString = decodedStringRS.getDecodedString();
-        decodedString = decodedString.replaceAll("\n", "\\n");
-        System.out.println(decodedString);
+        RandomSubstitution.printResult(cipherS, decodedStringRS);
+        RandomSubstitution.writeResultToFile(decodedStringRS, "sourceFile/Answer for Q4.txt");
     }
 
     private static void saveCipherCharFrequencyToFile(ArrayList<CharacterFrequency> cipherCharFreq) throws IOException {
@@ -111,7 +97,7 @@ public class Q4 {
     private static void noName(ArrayList<CharacterFrequency> cipherFreqTable, TreeMap<Character, Character> key,
                                int index, TreeMap<String, Double> mostCommonTriagram, HashSet<DecodedString.DecodedStringRS> results, String[] sampleWordsList) throws IOException {
         if (index == cipherFreqTable.size()) {
-            DecodedString.DecodedStringRS decodedString = RandomSubstitution.crackRandomSubstitution(key, mostCommonTriagram, sampleWordsList);
+            DecodedString.DecodedStringRS decodedString = RandomSubstitution.crack(key, mostCommonTriagram, sampleWordsList);
             if (decodedString.getScore() < THRESHOLD)
                 results.add(decodedString);
 //            if (key.values().contains(' ')) {

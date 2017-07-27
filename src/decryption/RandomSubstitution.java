@@ -2,6 +2,7 @@ package decryption;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,46 +11,18 @@ import java.util.*;
 import static decryption.Decryption.processTriagramFile;
 
 public class RandomSubstitution {
+
+    public static final double BIET_BAO_NHIEU_PHAN_TRAM_CHU = 0.40;
+
+    public static void main(String[] args) throws IOException, CannotFindCipherLetter {
+        crack("sourceFile/msg4.enc");
+    }
     private static final int THRESHOLD = -450;
 
     private static ArrayList<Character> cloneAL_C(ArrayList<Character> characterArrayList) {
         ArrayList<Character> result = new ArrayList<>();
         result.addAll(characterArrayList);
         return result;
-    }
-
-    //    TODO fix if have time
-    public static DecodedString.DecodedStringRS crackRandomSubstitution(TreeMap<Character, Character> key, TreeMap<String, Double> mostCommonTriagram, String[] cipher) throws IOException {
-//        String[] plaintextWordList = new String[sampleWordsList.length];
-        StringBuilder plainTextWordListSB = new StringBuilder();
-        for (String sampleWord : cipher) {
-            StringBuilder plainWord = new StringBuilder("");
-            for (int j = 0; j < sampleWord.length(); j++) {
-                plainWord.append(key.get(sampleWord.charAt(j)));
-                plainTextWordListSB.append(key.get(sampleWord.charAt(j)));
-            }
-//            plaintextWordList[i] = plainWord.toString();
-            plainTextWordListSB.append(' ');
-        }
-
-//        new String()
-        String decodedString = plainTextWordListSB.toString();
-//        ArrayList<Character> newString = new ArrayList<>();
-//        for (Character character : old_string) {
-//            Character newCharacter = key.get(character);
-//            newString.add(newCharacter);
-//        }
-//        TODOx need to check latter
-//        String decodedString = getStringRepresentation(newString);
-//        String decodedString = newString.stream().map(e->e.toString()).collect(Collectors.joining());
-        DecodedString.DecodedStringRS decodedStringRS = new DecodedString.DecodedStringRS(decodedString, key, scoringUsingTrigram(decodedString, mostCommonTriagram));
-        if (decodedStringRS.getScore() < THRESHOLD) {
-//            System.out.println("RESULT\n");
-            System.out.println("Key    " + decodedStringRS.getKey());
-            System.out.println("Score  " + decodedStringRS.getScore());
-            System.out.println("Decoded string: " + decodedStringRS.getDecodedString() + "\n");
-        }
-        return decodedStringRS;
     }
 
     private static double scoringUsingTrigram(String decodedString, TreeMap<String, Double> mostCommonTrigram) {
@@ -65,7 +38,7 @@ public class RandomSubstitution {
         double score = 0;
         for (String word : words) {
             /*ASSUMPTION: not exist word with length greater than 20*/
-            if (word.length() > 20) return 0;
+//            if (word.length() > 20) return 0;
             if (word.length() < 12 && word.length() >= 3) {
                 for (int i = 0; i < word.length() - 2; i++) {
                     if (mostCommonTrigram.containsKey(word.substring(i, i + 3))) {
@@ -114,17 +87,49 @@ public class RandomSubstitution {
         return key;
     }
 
+    //    TODOx fix if have time
+    public static DecodedString.DecodedStringRS crack(TreeMap<Character, Character> key, TreeMap<String, Double> mostCommonTriagram, String[] cipher) throws IOException {
+        StringBuilder plainTextSB = new StringBuilder();
+        for (String word : cipher) {
+//            StringBuilder plainWord = new StringBuilder("");
+            for (int j = 0; j < word.length(); j++) {
+//                plainWord.append(key.get(word.charAt(j)));
+                plainTextSB.append(key.get(word.charAt(j)));
+            }
+            plainTextSB.append(' ');
+        }
+
+//        new String()
+        String decodedString = plainTextSB.toString();
+//        ArrayList<Character> newString = new ArrayList<>();
+//        for (Character character : old_string) {
+//            Character newCharacter = key.get(character);
+//            newString.add(newCharacter);
+//        }
+//        TODOx need to check latter
+//        String decodedString = getStringRepresentation(newString);
+//        String decodedString = newString.stream().map(e->e.toString()).collect(Collectors.joining());
+        DecodedString.DecodedStringRS decodedStringRS = new DecodedString.DecodedStringRS(decodedString, key, scoringUsingTrigram(decodedString, mostCommonTriagram));
+        if (decodedStringRS.getScore() < THRESHOLD) {
+//            System.out.println("RESULT\n");
+            System.out.println("Key    " + decodedStringRS.getKey());
+            System.out.println("Score  " + decodedStringRS.getScore());
+            System.out.println("Decoded string: " + decodedStringRS.getDecodedString() + "\n");
+        }
+        return decodedStringRS;
+    }
+
     public static DecodedString.DecodedStringRS crack(String path, TreeMap<Character, Character> key) throws IOException, KeyNotContainSpaceException {
         ArrayList<Character> cipherAL_C = Decryption.readFile(path);
         String cipherS = Decryption.AL_C_toString(cipherAL_C);
         String[] cipherWordsA = cipherS.split(findCipherCharCorrespondingToSpace(key));
         TreeMap<String, Double> mostCommonTrigram = processTriagramFile(-1);
-        return crackRandomSubstitution(key, mostCommonTrigram, cipherWordsA);
+        return crack(key, mostCommonTrigram, cipherWordsA);
     }
 
     public static DecodedString.DecodedStringRS crack(String[] cipherWordsA, TreeMap<Character, Character> key) throws IOException {
         TreeMap<String, Double> mostCommonTrigram = processTriagramFile(-1);
-        return crackRandomSubstitution(key, mostCommonTrigram, cipherWordsA);
+        return crack(key, mostCommonTrigram, cipherWordsA);
     }
 
     private static String findCipherCharCorrespondingToSpace(TreeMap<Character, Character> key) throws KeyNotContainSpaceException {
@@ -135,10 +140,126 @@ public class RandomSubstitution {
 //        return null;
     }
 
+    private static DecodedString.DecodedStringRS crack(String path) throws IOException, CannotFindCipherLetter {
+//        EXPLAIN: basic preparation
+        ArrayList<Character> cipherAL_C = Decryption.readFile(path);
+        String cipherS = Decryption.AL_C_toString(cipherAL_C);
+        ArrayList<Character> alphabetFile = Decryption.processAlphabetFile();
+
+//        EXPLAIN: Do some basic analysis
+        ArrayList<CharacterFrequency> cipherCharFreq = CipherAnalysis.monogramAnalysis(alphabetFile, cipherAL_C);
+        ArrayList<SpaceAnalysis> spaceAnalyses = CipherAnalysis.analyzeSpacingCharacter(cipherAL_C, cipherCharFreq);
+
+//        EXPLAIN: Gia dinh space
+        char cipherLetterCorrespondingWithSpace = spaceAnalyses.get(0).getSpace();
+
+//        EXPLAIN: Tach cipher thanh cac words
+        String[] cipherWordsA = cipherS.split(Character.toString(cipherLetterCorrespondingWithSpace));
+
+//        EXPLAIN: Word analysis
+        TreeMap<String, Integer> oneLetterWordAnalysis = CipherAnalysis.getOneLetterWordFromCipher(cipherWordsA);
+        Map<String, Integer> twoLetterWordAnalysis = CipherAnalysis.getTwoLetterWordFromCipher(cipherWordsA);
+
+//        EXPLAIN: identify letters used in cipher
+        ArrayList<CharacterFrequency> letterUsedIncipher = CipherAnalysis.getLetterUseInCipher(cipherAL_C, cipherCharFreq);
+        Map<Character, Character> key = createKey(letterUsedIncipher);
+        key.put(cipherLetterCorrespondingWithSpace, ' ');
+
+
+//        EXPLAIN: Gia dinh chu a va chu e
+        char letterCorrespondingWithA = getLetterCorrespondingWithA(oneLetterWordAnalysis, key);
+//                oneLetterWordAnalysis.firstKey().charAt(0);
+        key.put(letterCorrespondingWithA, 'A');
+        char letterCorrespondingWithE = getLetterCorrespondingWithE(cipherCharFreq, key);
+        key.put(letterCorrespondingWithE, 'E');
+
+//        EXPLAIN Dua tren two-letter analys de gia dinh tiep
+        DecodedString.DecodedStringRS decodedStringRS = crack(cipherWordsA, (TreeMap<Character, Character>) key);
+        List guessableWords = findGuessableWords(decodedStringRS.getDecodedString().split(" "));
+
+        printResult(cipherS, decodedStringRS);
+
+        return null;
+    }
+
+    private static List findGuessableWords(String[] cipherWordsA) {
+        List guessableWords = new ArrayList();
+        for (String word: cipherWordsA){
+            double percentage = daBietBaoNhieuPhanTram(word);
+            if(percentage > BIET_BAO_NHIEU_PHAN_TRAM_CHU && percentage < 1) guessableWords.add(word);
+        }
+
+        return guessableWords;
+    }
+
+    private static double daBietBaoNhieuPhanTram(String word) {
+        int length = word.length();
+        int numberOfAsterisk = findNumberOfAsterisk(word);
+        return (double) (length - numberOfAsterisk)/length;
+    }
+
+    private static int findNumberOfAsterisk(String word) {
+
+        int numberOfAsterisk = 0;
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) == '*') numberOfAsterisk++;
+        }
+        return numberOfAsterisk;
+    }
+
+    private static char getLetterCorrespondingWithE(ArrayList<CharacterFrequency> cipherCharFreq, Map<Character, Character> key) throws CannotFindCipherLetter {
+        for (CharacterFrequency entry: cipherCharFreq){
+            Character cipherLetter = entry.getCharacter();
+            Character plainLetter = key.get(cipherLetter);
+            if(plainLetter == '*'){
+                return cipherLetter;
+            }
+        }
+        throw new CannotFindCipherLetter("E");
+    }
+
+    private static char getLetterCorrespondingWithA(TreeMap<String, Integer> oneLetterWordAnalysis, Map<Character, Character> key) throws CannotFindCipherLetter {
+        for (Map.Entry<String, Integer> entry: oneLetterWordAnalysis.entrySet()){
+            Character cipherLetter = entry.getKey().charAt(0);
+            Character plainLetter = key.get(cipherLetter);
+            if(plainLetter == '*'){
+                return cipherLetter;
+            }
+        }
+        throw new CannotFindCipherLetter("A");
+    }
+
+    private static Map<Character, Character> createKey(ArrayList<CharacterFrequency> letterUsedIncipher) {
+        Map<Character, Character> key = new TreeMap<>();
+        for (CharacterFrequency aLetterUsedIncipher : letterUsedIncipher) {
+            key.put(aLetterUsedIncipher.getCharacter(), '*');
+        }
+        return key;
+    }
+
+    public static void writeResultToFile(DecodedString.DecodedStringRS decodedStringRS, String path) throws IOException {
+        FileWriter fileWriter = new FileWriter(path);
+        fileWriter.write(decodedStringRS.getDecodedString());
+        fileWriter.close();
+    }
+
+    public static void printResult(String cipherS, DecodedString.DecodedStringRS decodedStringRS) {
+        cipherS = cipherS.replaceAll("\n", "\\n");
+        System.out.println(cipherS);
+        String decodedString = decodedStringRS.getDecodedString();
+        decodedString = decodedString.replaceAll("\n", "\\n");
+        System.out.println(decodedString);
+    }
+
 //    INNER CLASS
 
     private static class KeyNotContainSpaceException extends Exception {
+    }
 
+    private static class CannotFindCipherLetter extends Exception{
+        public CannotFindCipherLetter(String message) {
+            super(message);
+        }
     }
 
     public static class SpaceAnalysis {
@@ -204,8 +325,8 @@ public class RandomSubstitution {
 
     public static class CipherAnalysis {
 
-        public static TreeMap<String, Integer> getTwoLetterWordFromCipher(String[] cipher) {
-            TreeMap<String, Integer> result = new TreeMap<>();
+        public static Map<String, Integer> getTwoLetterWordFromCipher(String[] cipher) {
+            Map<String, Integer> result = new TreeMap<>();
             for (String word : cipher) {
                 if (word.length() == 2) {
                     if (result.containsKey(word)) {
@@ -215,6 +336,7 @@ public class RandomSubstitution {
                     }
                 }
             }
+            result = sortByValue(result);
             return result;
         }
 
@@ -318,6 +440,27 @@ public class RandomSubstitution {
 
             return frequency;
         }
+
+        static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map){
+//            TODO read up on Generic, Interface, Anoynomous class
+            List<Map.Entry<K, V>> list =
+                    new LinkedList<>( map.entrySet() );
+            Collections.sort( list, new Comparator<Map.Entry<K, V>>()
+            {
+                @Override
+                public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
+                {
+                    return ( o2.getValue() ).compareTo( o1.getValue() );
+                }
+            } );
+
+            Map<K, V> result = new LinkedHashMap<>();
+            for (Map.Entry<K, V> entry : list)
+            {
+                result.put( entry.getKey(), entry.getValue() );
+            }
+            return result;
+        }
     }
 
     public static class EnglishAnalysis {
@@ -361,3 +504,23 @@ public class RandomSubstitution {
         }
     }
 }
+
+/*Strategy
+* Goal: Input: Ciphertext Output: plaintext
+* 1. Do some basic analysis
+*   - Space analysis
+*   - Monogram analysis*
+* 2. Gia dinh space
+* 3. Tach cipher thanh cac words
+* 4. Do these analysis
+*   - Single letter word analysis
+*   - Two letter word analysis
+* 5. Gia dinh chu a
+* 6. Gia dinh chu e
+* 7. Dua tren two-letter analys de gia dinh tiep
+*   - Tim ra nhung chu co the doan duoc
+*   - Nhin trong tu dien de xem day co the la chu gi
+*   - Cap nhat key
+*   - Lap lai
+* 8.
+* */
