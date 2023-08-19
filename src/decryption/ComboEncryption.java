@@ -41,7 +41,7 @@ public class ComboEncryption {
             finalResultAL.addAll(Arrays.asList(caesarCrackingResultA));
         }
 
-//        EXPLAIN: look for the ones with highest score
+//        EXPLAIN: look for the ones with the highest score
         finalResultAL.sort((o1, o2) -> {
             if (o1.getScore() < o2.getScore()) return -1;
             else if (o1.getScore() > o2.getScore()) return 1;

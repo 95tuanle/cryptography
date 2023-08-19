@@ -8,21 +8,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static decryption.Decryption.processTriagramFile;
+import static decryption.Decryption.processTrigramFile;
 
 public class RandomSubstitution {
 
     public static final double BIET_BAO_NHIEU_PHAN_TRAM_CHU = 0.40;
+    private static final int THRESHOLD = -450;
 
     public static void main(String[] args) throws IOException, CannotFindCipherLetter {
         crack("sourceFile/msg4.enc");
     }
-    private static final int THRESHOLD = -450;
 
     private static ArrayList<Character> cloneAL_C(ArrayList<Character> characterArrayList) {
-        ArrayList<Character> result = new ArrayList<>();
-        result.addAll(characterArrayList);
-        return result;
+        return new ArrayList<>(characterArrayList);
     }
 
     private static double scoringUsingTrigram(String decodedString, TreeMap<String, Double> mostCommonTrigram) {
@@ -54,8 +52,7 @@ public class RandomSubstitution {
         TreeMap<Character, Character> key = new TreeMap<>();
         FileReader fileReader = new FileReader(fileName);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String line = bufferedReader.readLine();
-        boolean isLineContainNewlineChar = false;
+        String line;
 
         while ((line = bufferedReader.readLine()) != null) {
 //            if (line.equals("")) {
@@ -66,7 +63,7 @@ public class RandomSubstitution {
             Character cipherCharacter;
             cipherCharacter = lineComponents[0].charAt(0);
             if (cipherCharacter == 'n') cipherCharacter = '\n';
-            Character plainCharC;
+            char plainCharC;
             if (lineComponents.length == 3) {
                 String plainCharS = lineComponents[2];
                 plainCharC = plainCharS.charAt(0);
@@ -123,12 +120,12 @@ public class RandomSubstitution {
         ArrayList<Character> cipherAL_C = Decryption.readFile(path);
         String cipherS = Decryption.AL_C_toString(cipherAL_C);
         String[] cipherWordsA = cipherS.split(findCipherCharCorrespondingToSpace(key));
-        TreeMap<String, Double> mostCommonTrigram = processTriagramFile(-1);
+        TreeMap<String, Double> mostCommonTrigram = processTrigramFile(-1);
         return crack(key, mostCommonTrigram, cipherWordsA);
     }
 
     public static DecodedString.DecodedStringRS crack(String[] cipherWordsA, TreeMap<Character, Character> key) throws IOException {
-        TreeMap<String, Double> mostCommonTrigram = processTriagramFile(-1);
+        TreeMap<String, Double> mostCommonTrigram = processTrigramFile(-1);
         return crack(key, mostCommonTrigram, cipherWordsA);
     }
 
@@ -184,9 +181,9 @@ public class RandomSubstitution {
 
     private static List findGuessableWords(String[] cipherWordsA) {
         List guessableWords = new ArrayList();
-        for (String word: cipherWordsA){
+        for (String word : cipherWordsA) {
             double percentage = daBietBaoNhieuPhanTram(word);
-            if(percentage > BIET_BAO_NHIEU_PHAN_TRAM_CHU && percentage < 1) guessableWords.add(word);
+            if (percentage > BIET_BAO_NHIEU_PHAN_TRAM_CHU && percentage < 1) guessableWords.add(word);
         }
 
         return guessableWords;
@@ -195,7 +192,7 @@ public class RandomSubstitution {
     private static double daBietBaoNhieuPhanTram(String word) {
         int length = word.length();
         int numberOfAsterisk = findNumberOfAsterisk(word);
-        return (double) (length - numberOfAsterisk)/length;
+        return (double) (length - numberOfAsterisk) / length;
     }
 
     private static int findNumberOfAsterisk(String word) {
@@ -208,10 +205,10 @@ public class RandomSubstitution {
     }
 
     private static char getLetterCorrespondingWithE(ArrayList<CharacterFrequency> cipherCharFreq, Map<Character, Character> key) throws CannotFindCipherLetter {
-        for (CharacterFrequency entry: cipherCharFreq){
+        for (CharacterFrequency entry : cipherCharFreq) {
             Character cipherLetter = entry.getCharacter();
             Character plainLetter = key.get(cipherLetter);
-            if(plainLetter == '*'){
+            if (plainLetter == '*') {
                 return cipherLetter;
             }
         }
@@ -219,10 +216,10 @@ public class RandomSubstitution {
     }
 
     private static char getLetterCorrespondingWithA(TreeMap<String, Integer> oneLetterWordAnalysis, Map<Character, Character> key) throws CannotFindCipherLetter {
-        for (Map.Entry<String, Integer> entry: oneLetterWordAnalysis.entrySet()){
+        for (Map.Entry<String, Integer> entry : oneLetterWordAnalysis.entrySet()) {
             Character cipherLetter = entry.getKey().charAt(0);
             Character plainLetter = key.get(cipherLetter);
-            if(plainLetter == '*'){
+            if (plainLetter == '*') {
                 return cipherLetter;
             }
         }
@@ -256,23 +253,19 @@ public class RandomSubstitution {
     private static class KeyNotContainSpaceException extends Exception {
     }
 
-    private static class CannotFindCipherLetter extends Exception{
+    public static class CannotFindCipherLetter extends Exception {
         public CannotFindCipherLetter(String message) {
             super(message);
         }
     }
 
     public static class SpaceAnalysis {
-        private String string;
-        private int max_word_size;
-        private char space;
-        private TreeMap<Integer, Integer> wordLengthAnalysis;
+        private final int max_word_size;
+        private final char space;
 
         SpaceAnalysis(String string, int max_word_size, char space, TreeMap<Integer, Integer> wordLengthAnalysis) {
-            this.string = string;
             this.max_word_size = max_word_size;
             this.space = space;
-            this.wordLengthAnalysis = wordLengthAnalysis;
         }
 
         int getMax_word_size() {
@@ -412,7 +405,7 @@ public class RandomSubstitution {
             return returnResult;
         }
 
-        public static ArrayList<CharacterFrequency> monogramAnalysis(ArrayList<Character> alphabetFile, ArrayList<Character> cipher) throws IOException {
+        public static ArrayList<CharacterFrequency> monogramAnalysis(ArrayList<Character> alphabetFile, ArrayList<Character> cipher) {
             String cipherText = Decryption.AL_C_toString(cipher);
             int frequency;
             ArrayList<CharacterFrequency> charFreq = new ArrayList<>();
@@ -441,30 +434,22 @@ public class RandomSubstitution {
             return frequency;
         }
 
-        static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map){
+        static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
 //            TODO read up on Generic, Interface, Anoynomous class
             List<Map.Entry<K, V>> list =
-                    new LinkedList<>( map.entrySet() );
-            Collections.sort( list, new Comparator<Map.Entry<K, V>>()
-            {
-                @Override
-                public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
-                {
-                    return ( o2.getValue() ).compareTo( o1.getValue() );
-                }
-            } );
+                    new LinkedList<>(map.entrySet());
+            list.sort((o1, o2) -> (o2.getValue()).compareTo(o1.getValue()));
 
             Map<K, V> result = new LinkedHashMap<>();
-            for (Map.Entry<K, V> entry : list)
-            {
-                result.put( entry.getKey(), entry.getValue() );
+            for (Map.Entry<K, V> entry : list) {
+                result.put(entry.getKey(), entry.getValue());
             }
             return result;
         }
     }
 
     public static class EnglishAnalysis {
-        private static TreeMap<Integer, Integer> commonEnglishWord_LengthAnalysis(TreeMap<String, Double> mostCommonWords) throws IOException {
+        private static TreeMap<Integer, Integer> commonEnglishWord_LengthAnalysis(TreeMap<String, Double> mostCommonWords) {
             //      TODOx can I not hard-code 20? can but what's the point?
             TreeMap<Integer, Integer> frequencyTM = new TreeMap<>();
             for (Map.Entry<String, Double> entry : mostCommonWords.entrySet()) {
@@ -478,7 +463,7 @@ public class RandomSubstitution {
             return frequencyTM;
         }
 
-        public static int getLengthOfMostEnglishWord(TreeMap<String, Double> mostCommonWords) throws IOException {
+        public static int getLengthOfMostEnglishWord(TreeMap<String, Double> mostCommonWords) {
             TreeMap<Integer, Integer> frequency = commonEnglishWord_LengthAnalysis(mostCommonWords);
             int commonWordSize = 0;
             int totalNumberOfWords = frequency.get(commonWordSize);
@@ -496,7 +481,7 @@ public class RandomSubstitution {
             for (String next : lines) {
                 String[] splittingResult = next.split(" ");
                 char character = splittingResult[0].charAt(0);
-                int frequency = Integer.valueOf(splittingResult[1]);
+                int frequency = Integer.parseInt(splittingResult[1]);
                 monoFreq.add(new CharacterFrequency(character, frequency));
             }
             return monoFreq;
@@ -506,21 +491,21 @@ public class RandomSubstitution {
 }
 
 /*Strategy
-* Goal: Input: Ciphertext Output: plaintext
-* 1. Do some basic analysis
-*   - Space analysis
-*   - Monogram analysis*
-* 2. Gia dinh space
-* 3. Tach cipher thanh cac words
-* 4. Do these analysis
-*   - Single letter word analysis
-*   - Two letter word analysis
-* 5. Gia dinh chu a
-* 6. Gia dinh chu e
-* 7. Dua tren two-letter analys de gia dinh tiep
-*   - Tim ra nhung chu co the doan duoc
-*   - Nhin trong tu dien de xem day co the la chu gi
-*   - Cap nhat key
-*   - Lap lai
-* 8.
-* */
+ * Goal: Input: Ciphertext Output: plaintext
+ * 1. Do some basic analysis
+ *   - Space analysis
+ *   - Monogram analysis*
+ * 2. Gia dinh space
+ * 3. Tach cipher thanh cac words
+ * 4. Do these analysis
+ *   - Single letter word analysis
+ *   - Two letter word analysis
+ * 5. Gia dinh chu a
+ * 6. Gia dinh chu e
+ * 7. Dua tren two-letter analys de gia dinh tiep
+ *   - Tim ra nhung chu co the doan duoc
+ *   - Nhin trong tu dien de xem day co the la chu gi
+ *   - Cap nhat key
+ *   - Lap lai
+ * 8.
+ * */

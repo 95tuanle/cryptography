@@ -1,7 +1,8 @@
-import decryption.*;
+import decryption.Caesar;
+import decryption.ComboEncryption;
+import decryption.RandomSubstitution;
+import decryption.Transposition;
 
-
-import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class Q7 {
@@ -29,11 +30,11 @@ public class Q7 {
 //        decryptQuestionSeven();
     }
 
-/*SUM-UP
-* 1. Space analysis: analyzeSpacingCharacter
-* 2. Monogram analysis: createFrequencyTable
-* 3. Most common one letter word analysis: getOneLetterWordFromCipher
-* 4. Most common two letter words analysis: getTwoLetterWordFromCipher
-* 5. Guessing
-* */
+    /*SUM-UP
+     * 1. Space analysis: analyzeSpacingCharacter
+     * 2. Monogram analysis: createFrequencyTable
+     * 3. Most common one-letter word analysis: getOneLetterWordFromCipher
+     * 4. Most common two-letter words analysis: getTwoLetterWordFromCipher
+     * 5. Guessing
+     * */
 }

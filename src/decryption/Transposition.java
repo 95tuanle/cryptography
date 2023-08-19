@@ -33,7 +33,7 @@ public class Transposition {
         }
     }
 
-    private static void crackWithNoSpecificKey(ArrayList<Character> old_string, ArrayList<Integer> commonDivisors, ArrayList<DecodedString.DecodedStringCT> results, TreeMap<String, Double> mostCommonWords) throws IOException {
+    private static void crackWithNoSpecificKey(ArrayList<Character> old_string, ArrayList<Integer> commonDivisors, ArrayList<DecodedString.DecodedStringCT> results, TreeMap<String, Double> mostCommonWords) {
         for (int i : commonDivisors) {
             transpositionActualCrack(i, old_string, results, mostCommonWords);
         }
@@ -41,13 +41,13 @@ public class Transposition {
         Decryption.printTopThreeResult(resultsAsArray);
     }
 
-    private static void crackWithSpecificKey(int key, ArrayList<Character> old_string, ArrayList<DecodedString.DecodedStringCT> results, TreeMap<String, Double> mostCommonWords) throws IOException {
+    private static void crackWithSpecificKey(int key, ArrayList<Character> old_string, ArrayList<DecodedString.DecodedStringCT> results, TreeMap<String, Double> mostCommonWords) {
         transpositionActualCrack(key, old_string, results, mostCommonWords);
         System.out.println("RESULT:\n");
         System.out.println(results.get(0));
     }
 
-    static void transpositionActualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString.DecodedStringCT> results, TreeMap<String, Double> mostCommonWord) throws IOException {
+    static void transpositionActualCrack(int key, ArrayList<Character> old_string, ArrayList<DecodedString.DecodedStringCT> results, TreeMap<String, Double> mostCommonWord) {
         StringBuilder result = new StringBuilder();
         for (int k = 0; k < old_string.size() / key; k++) {
             for (int j = 0; j < key; j++) {

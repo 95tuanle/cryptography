@@ -4,15 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Decryption {
 
-    static double scoring(String decodedString, TreeMap<String, Double> mostCommonWords) throws IOException {
-//        TODOx better way to score? idk but I dont have time for it
+    static double scoring(String decodedString, TreeMap<String, Double> mostCommonWords) {
+//        TODOx better way to score? IDK, but I don't have time for it
         String[] words = decodedString.split("\\s+");
         double score = 0;
 
@@ -32,10 +29,10 @@ public class Decryption {
 
     static String AL_I_toString(ArrayList<Integer> stringAL_I, ArrayList<Character> alphabetFile) {
         /*
-        * 1. Convert orinial to DenisCode
-        * 2. Plus 1
-        * 3. Convert Denis code to character
-        * */
+         * 1. Convert original to DenisCode
+         * 2. Plus 1
+         * 3. Convert Denis code to character
+         * */
 
 //        EXPLAIN: COVERT ORIGINAL TO DENIS CODE
 //        TODOx better way to convert?
@@ -74,14 +71,14 @@ public class Decryption {
 
     public static ArrayList<Character> processAlphabetFile() throws IOException {
         ArrayList<Character> in = readFile("sourceFile/alphabet.txt");
-//        TODOx anyway to not hard-code? Idk and I also don't have time
+//        TODOx anyway to not hard-code? IDK and I also don't have time
         in.remove(39);
         in.set(39, '\n');
         return in;
     }
 
     public static ArrayList<Integer> convertFromASCIIToDenisCode(ArrayList<Character> originalString, ArrayList<Character> alphabetFile) {
-//        TODOx if have time think of a more efficient algorithm
+//        TODOx if I have time think of a more efficient algorithm
         ArrayList<Integer> stringAfterConverted = new ArrayList<>();
         for (Character anOriginalCharacter : originalString) {
             stringAfterConverted.add(alphabetFile.indexOf(anOriginalCharacter));
@@ -97,11 +94,7 @@ public class Decryption {
     }
 
     public static void sortResult(ArrayList<DecodedString.DecodedStringVN> results) {
-        results.sort((o1, o2) -> {
-            if (o1.getScore() > o2.getScore()) return 1;
-            if (o1.getScore() < o2.getScore()) return -1;
-            return 0;
-        });
+        results.sort(Comparator.comparingDouble(DecodedString::getScore));
     }
 
     static void printTopThreeResult(DecodedString.DecodedStringCT[] finalResult) {
@@ -152,7 +145,7 @@ public class Decryption {
             for (Map.Entry<String, Double> entry : mostCommonWords.entrySet()) {
                 entry.setValue(Math.log(entry.getValue() / total_count));
             }
-//            TODOx support case where number of words is specified
+//            TODOx support case where the number of words is specified
 
             // Always close files.
             bufferedReader.close();
@@ -172,14 +165,14 @@ public class Decryption {
         return null;
     }
 
-    private static double getTotalCount(TreeMap<String, Double> mostCommonTriagrams, BufferedReader bufferedReader,
+    private static double getTotalCount(TreeMap<String, Double> mostCommonTrigrams, BufferedReader bufferedReader,
                                         double total_count, int numberOfWords) throws IOException {
         String line;
         int numberOrReadLines = 0;
         while ((line = bufferedReader.readLine()) != null && numberOrReadLines <= numberOfWords) {
             String[] lineComponents = line.split(" ");
-            Double count = Double.valueOf(lineComponents[1]);
-            mostCommonTriagrams.put(lineComponents[0], count);
+            double count = Double.parseDouble(lineComponents[1]);
+            mostCommonTrigrams.put(lineComponents[0], count);
             total_count += count;
             numberOrReadLines++;
         }
@@ -202,13 +195,13 @@ public class Decryption {
         return result;
     }
 
-    static TreeMap<String, Double> processTriagramFile(int numberOfWords) {
+    static TreeMap<String, Double> processTrigramFile(int numberOfWords) {
 //        TODOx support limit number of words
         if (numberOfWords < -1 || numberOfWords > 10000)
             throw new IllegalArgumentException("Number of words must be >= -1 and <= 70000!");
 //        String line;
-        if(numberOfWords == -1) numberOfWords = 10000;
-        TreeMap<String, Double> mostCommonTriagrams = new TreeMap<>();
+        if (numberOfWords == -1) numberOfWords = 10000;
+        TreeMap<String, Double> mostCommonTrigrams = new TreeMap<>();
 
         try {
             // FileReader reads text files in the default encoding.
@@ -220,13 +213,12 @@ public class Decryption {
                     new BufferedReader(fileReader);
 //            int pos = 0;
             double total_count = 0;
-            int numberOrReadLines = 0;
-            total_count = getTotalCount(mostCommonTriagrams, bufferedReader, total_count, numberOfWords);
-            for (Map.Entry<String, Double> entry : mostCommonTriagrams.entrySet()) {
+            total_count = getTotalCount(mostCommonTrigrams, bufferedReader, total_count, numberOfWords);
+            for (Map.Entry<String, Double> entry : mostCommonTrigrams.entrySet()) {
                 entry.setValue(Math.log(entry.getValue() / total_count));
             }
             bufferedReader.close();
-            return mostCommonTriagrams;
+            return mostCommonTrigrams;
 
         } catch (FileNotFoundException ex) {
             System.out.println(

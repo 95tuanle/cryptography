@@ -5,8 +5,8 @@ import java.util.Comparator;
 import java.util.TreeMap;
 
 public class DecodedString implements Comparator<DecodedString> {
-    private String decodedString;
-    private double score;
+    private final String decodedString;
+    private final double score;
 
     //  TODOx any other classes?
 
@@ -26,9 +26,7 @@ public class DecodedString implements Comparator<DecodedString> {
 
     @Override
     public int compare(DecodedString o1, DecodedString o2) {
-        if (o1.score > o2.score) return 1;
-        else if (o1.score < o2.score) return -1;
-        else return 0;
+        return Double.compare(o1.score, o2.score);
     }
 
     @Override
@@ -39,7 +37,7 @@ public class DecodedString implements Comparator<DecodedString> {
 
     // CT stands for Caesar and Transposition
     public static class DecodedStringCT extends DecodedString {
-        private int key;
+        private final int key;
 
         DecodedStringCT(String decodedString, double score, int key) {
             super(decodedString, score);
@@ -58,7 +56,7 @@ public class DecodedString implements Comparator<DecodedString> {
     }
 
     public static class DecodedStringRS extends DecodedString {
-        private TreeMap<Character, Character> key;
+        private final TreeMap<Character, Character> key;
 
         DecodedStringRS(String decodedString, TreeMap<Character, Character> key, double score) {
             super(decodedString, score);
@@ -77,7 +75,7 @@ public class DecodedString implements Comparator<DecodedString> {
 
     // VN stands for Vernam
     public static class DecodedStringVN extends DecodedString {
-        private ArrayList<Character> key;
+        private final ArrayList<Character> key;
 
         DecodedStringVN(String decodedString, double score, ArrayList<Character> key) {
             super(decodedString, score);

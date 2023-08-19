@@ -43,7 +43,7 @@ public class Caesar {
         Decryption.printTopThreeResult(resultsA);
     }
 
-    static void crackCaesarCore(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsAsArray, int i) throws IOException {
+    static void crackCaesarCore(ArrayList<Character> alphabetFile, ArrayList<Integer> convertedString, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsAsArray, int i) {
         int alphabetFileSize = alphabetFile.size();
         ArrayList<Integer> newString = new ArrayList<>();
         for (Integer elementInConvertedString : convertedString) {
