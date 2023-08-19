@@ -27,7 +27,7 @@ public class Caesar {
         }
     }
 
-    private static void crackCaesarWithSpecificKey(int key, ArrayList<Character> alphabetFile, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsA) throws IOException {
+    private static void crackCaesarWithSpecificKey(int key, ArrayList<Character> alphabetFile, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsA) {
         crackCaesarCore(alphabetFile, cipherAL_I, mostCommonWords, resultsA, key);
         System.out.println("RESULT\n");
         System.out.println("Key    " + resultsA[key].getKey());
@@ -35,7 +35,7 @@ public class Caesar {
         System.out.println("Decoded string:\n\n" + resultsA[key].getDecodedString() + "\n");
     }
 
-    private static void crackCaesarWithNoSpecificKey(ArrayList<Character> alphabetFile, int alphabetFileSize, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsA) throws IOException {
+    private static void crackCaesarWithNoSpecificKey(ArrayList<Character> alphabetFile, int alphabetFileSize, ArrayList<Integer> cipherAL_I, TreeMap<String, Double> mostCommonWords, DecodedString.DecodedStringCT[] resultsA) {
         for (int i = 0; i < alphabetFileSize; i++) {
             crackCaesarCore(alphabetFile, cipherAL_I, mostCommonWords, resultsA, i);
         }
